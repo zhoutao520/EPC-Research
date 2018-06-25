@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="keywords" content="IE=edge">
+    <title>伊塔系统前期调研表</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script src="js/changeFontSize.js"></script>
+    <link rel="stylesheet" type="text/css" media="screen" href="assets/mintUI.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="css/index.css" />
+</head>
+<body>
+    <div id="app">
+        <div id="load" class="load"><img src="img/load.gif" alt="加载中"></div>
+        <!-- 首页 -->
+        <div v-if="index.show" class="common">
+            <header>
+                <!-- <i class="iconI back" >
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i> -->
+                <h1>我的项目</h1>
+                <i class="iconI add" @click="exit()">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-dengchu"></use>
+                    </svg>
+                </i>
+            </header>
+            <div @click="indexClick(item)" class="projectInfo" v-for="(item,index) in index.data">
+                <p>项目名称：{{item.pro_name}}</p>
+                <p>录入时间：{{item.createTime}}</p>
+                <i class="iconI index-right">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-youjiantou"></use>
+                    </svg>
+                </i>
+            </div>
+            <mt-button type="primary" class="addindex" @click.native="index.show=false;choice.show=true">
+                <i class="iconI">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-tianjia"></use>
+                    </svg>
+                </i>
+                <span>
+                    添加项目
+                </span>
+            </mt-button>
+        </div>
+        <!-- 选择用途 -->
+        <div v-if="choice.show" class="choice">
+            <header>
+                <i class="iconI back"  @click="choice.show=false;index.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>项目用途</h1>
+                <!-- <i class="iconI add">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-tianjia"></use>
+                    </svg>
+                </i> -->
+            </header>
+            <mt-button type="primary" @click.native="choiceClick('办公')">办公</mt-button>
+            <mt-button type="primary" @click.native="choiceClick('学校')">学校</mt-button>
+            <mt-button type="primary" @click.native="choiceClick('工厂/车间')">工厂/车间</mt-button>
+            <mt-button type="primary" @click="choice.other = !choice.other">其他</mt-button>
+            <div v-if="choice.other">
+                <mt-field placeholder="请输入项目用途" class="other" v-model="basic.data.pro_used">
+                    <mt-button type="danger" class="other-btn" @click.native="choiceClick(basic.data.pro_used)">确认</mt-button>
+                </mt-field>
+            </div>
+        </div>
+        <!-- 基本信息 -->
+        <div v-if="basic.show" class="common">
+            <div v-if="basic.type == 0">
+                <header>
+                    <i class="iconI back" @click="basic.show=false;choice.show=true">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#icon-back"></use>
+                        </svg>
+                    </i>
+                    <h1>项目概况</h1>
+                </header>
+                <div class="survey">
+                    <mt-field label="项目名称：" class="required" placeholder="ABC" v-model="basic.data.pro_name"></mt-field>
+                    <mt-field label="项目用途：" class="required" id="used" readonly=true v-model="basic.data.pro_used"></mt-field>
+                    <mt-field label="层数：" class="required" placeholder="5" type="number" v-model.number="basic.data.pro_floor"></mt-field>
+                    <mt-field label="建筑面积(m²)：" class="required" placeholder="12000" type="number" v-model.number="basic.data.pro_cover"></mt-field>
+                    <mt-field label="项目所在地：" class="required" placeholder="杭州" v-model="basic.data.pro_place"></mt-field>
+                    <mt-field label="建成时间：" placeholder="2009年5月" v-model="basic.data.pro_createTime"></mt-field>
+                </div>
+                <mt-button type="primary" class="submit" @click.native="basic.type=1">下一步</mt-button>
+            </div>
+            <div v-if="basic.type == 1">
+                <header>
+                    <i class="iconI back" @click="basic.type=0">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#icon-back"></use>
+                        </svg>
+                    </i>
+                    <h1>能耗费用</h1>
+                </header>
+                <div class="survey">
+                    <mt-field label="建筑物一年能耗费用(照明系统、电梯、中央空凋能耗)：" class="required" placeholder="2000万" v-model="basic.data.pro_cost"></mt-field>
+                    <mt-field label="制冷费用(冷冻机、冷冻泵、冷却泵、冷却塔)：" class="required" placeholder="800万" v-model="basic.data.pro_cool"></mt-field>
+                    <mt-field label="制热费用(用于锅炉的燃气、热水泵等)：" class="required" placeholder="600万" v-model="basic.data.pro_hot"></mt-field>
+                    <mt-field label="末端费用(空调箱、风机盘管的电费)：" class="required" placeholder="50万" v-model="basic.data.pro_end"></mt-field>
+                    <mt-field label="租户收费计算方式：" class="required" placeholder="元/平米" v-model="basic.data.pro_rentCost"></mt-field>
+                </div>
+                <mt-button type="primary" class="submit" @click.native="basic.type=2">下一步</mt-button>
+            </div>
+            <div v-if="basic.type == 2">
+                <header>
+                    <i class="iconI back" @click="basic.type=1">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#icon-back"></use>
+                        </svg>
+                    </i>
+                    <h1>能源价格</h1>
+                </header>
+                <div class="survey">
+                    <mt-field label="电费单价：" class="required" placeholder="1.64" type="number" v-model.number="basic.data.pro_electric_money"></mt-field>
+                    <mt-switch v-model="basic.data.pro_electric_change"><span>*</span>是否变电价：</mt-switch>
+                    <mt-field label="天然气单价：" class="required" placeholder="3.88" type="number" v-model.number="basic.data.pro_gas_money"></mt-field>
+                </div>
+                <mt-button type="primary" class="submit" @click.native="basic.type=3">下一步</mt-button>
+            </div>
+            <div v-if="basic.type == 3">
+                <header>
+                    <i class="iconI back" @click="basic.type=2">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#icon-back"></use>
+                        </svg>
+                    </i>
+                    <h1>运营状况</h1>
+                </header>
+                <div class="survey">
+                    <mt-field label="设施管理单位：" placeholder="XX物业" v-model="basic.data.pro_manage"></mt-field>
+                    <mt-switch v-model="basic.data.pro_outsource">能源系统是否外包：</mt-switch>
+                    <mt-field label="能源托管承保公司：" placeholder="—" v-model="basic.data.pro_company"></mt-field>
+                    <mt-field label="现场空调系统运营人数：" placeholder="15" type="number" v-model.number="basic.data.pro_pserson"></mt-field>
+                </div>
+                <mt-button type="primary" class="submit" @click.native="basicClick()">保存</mt-button>
+            </div>
+        </div>
+        <!-- 选择设备 -->
+        <div v-if="select.show" class="common">
+            <header>
+                <h1>选择设备</h1>
+            </header>
+            <mt-checklist class="select"
+            align="right"
+            v-model="select.options"
+            :options="option">
+            </mt-checklist>
+            <mt-button type="primary" class="submit" @click.native="selectClick()">下一步</mt-button>
+        </div>
+        <!-- 设备信息 -->
+        <div v-if="projectInfo.show" class="common">
+            <header>
+                <i class="iconI back" @click="location.reload()">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>设备信息</h1>
+            </header>
+            <div @click="projectInfoClick(item,projectInfo.options.name[index])" class="projectInfo" v-for="(item,index) in projectInfo.options.id">{{projectInfo.options.name[index]}}
+                <i class="iconI ">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-youjiantou"></use>
+                    </svg>
+                </i>
+            </div>
+            <mt-button type="primary" @click.native="projectOver">上传项目</mt-button>
+        </div>
+        <!-- 机组信息 -->
+        <div v-if="crew.show" class="common">
+            <header>
+                <i @click="crewBack()" class="iconI back" >
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1 v-text="crew.title"></h1>
+            </header>
+            <div class="projectInfo" v-for="(item,index) in crew.options">{{item}}
+                <i @click="crewClick(item,crew.status[index])" class="iconI ">
+                    {{crew.status[index]}}
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-youjiantou"></use>
+                    </svg>
+                </i>
+            </div>
+        </div>
+        <!-- 楼宇自控系统 -->
+        <div v-if="building.show" class="common">
+            <header>
+                <i class="iconI back" @click="building.show=false;crew.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>楼宇自控系统</h1>
+            </header>
+            <div class="summary">
+                <h3>系统概况</h3>
+                <mt-field label="自控软件生产厂家：" class="required" placeholder="霍尼韦尔" v-model="building.data.software_maker"></mt-field>
+                <mt-field label="自控软件型号：" placeholder="FGG" v-model="building.data.software_type"></mt-field>
+                <mt-field label="控制器生产厂家：" class="required" placeholder="霍尼韦尔" v-model="building.data.control_maker"></mt-field>
+                <mt-field label="控制器型号：" class="required" placeholder="E001" v-model="building.data.control_type"></mt-field>
+            </div>
+            <div class="segmenting"></div>
+            <div class="summary">
+                <h3>系统控制参数</h3>
+                <p class="title first">1、是否可获得室外温湿度参数</p>
+                <mt-radio align="right" v-model="building.data.is_get_out_temp" :options="options"></mt-radio>
+                <p class="title">2、是否可获得建筑物内各部分的温度（或回风温度）<span>*</span></p>
+                <mt-radio align="right" v-model="building.data.is_get_in_temp" :options="options"></mt-radio>
+                <p class="title">3、是否可获得建筑物内各部分的湿度（回风湿度）<span>*</span></p>
+                <mt-radio align="right" v-model="building.data.is_get_in_humidity" :options="options"></mt-radio>
+                <p class="title">4、温湿度数据准确度：<span style="vertical-align:top">{{building.data.is_tempAndHumidity}}</span>%</p>
+                <mt-range v-model="building.data.is_tempAndHumidity">
+                    <div slot="start">0</div>
+                    <div slot="end">100</div>
+                </mt-range>
+                <p class="title">5、是否可获得制冷系统（冷机水泵等）的工作参数<span>*</span></p>
+                <mt-radio align="right" v-model="building.data.is_get_cool_status" :options="options"></mt-radio>
+                <p class="title">6、是否可对制冷系统（冷机水泵等）进行远程控制<span>*</span></p>
+                <mt-radio align="right" v-model="building.data.is_get_cool_control" :options="options"></mt-radio>
+                <p class="title">7、是否可获得采暖系统（锅炉、水泵等）的工作参数<span>*</span></p>
+                <mt-radio align="right" v-model="building.data.is_get_hot_status" :options="options"></mt-radio>
+                <p class="title">8、是否可对采暖系统（锅炉、水泵等）进行远程控制<span>*</span></p>
+                <mt-radio align="right" v-model="building.data.is_get_hot_control" :options="options"></mt-radio>
+                <p class="title">9、是否可获得末端设备（AHU、FCU）的工作参数<span>*</span></p>
+                <mt-radio align="right" v-model="building.data.is_get_end_status" :options="options"></mt-radio>
+                <p class="title">10、是否可对末端设备（AHU、FCU等）进行远程控制<span>*</span></p>
+                <mt-radio align="right" v-model="building.data.is_get_end_control" :options="options"></mt-radio>
+                <p class="title">11、使用自控系统运行的时间比例：<span style="vertical-align:top">{{building.data.auto_control_time}}</span>%</p>
+                <mt-range v-model="building.data.auto_control_time">
+                    <div slot="start">0</div>
+                    <div slot="end">100</div>
+                </mt-range>
+            </div>
+            <mt-button type="primary" @click.native="buildingClick">确认</mt-button>
+        </div>
+        <!-- 末端系统 -->
+        <div v-if="endSystem.show" class="common">
+            <header>
+                <i class="iconI back" @click="endSystem.show=false;crew.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>末端系统</h1>
+            </header>
+            <div class="summary">
+                <h3>系统概况</h3>
+                <p class="title first">双管制（冷热水共管）还是四管制（冷热水完全独立）<span>*</span></p>
+                <mt-radio align="right" v-model="endSystem.data.tube_type" :options="['双管','四管']"></mt-radio>
+                <p class="title">一次泵系统还是二次泵系统<span>*</span></p>
+                <mt-radio align="right" v-model="endSystem.data.pump_type" :options="['一次','二次']"></mt-radio>
+                <p class="title">空气处理单元AHU的类型</p>
+                <mt-radio align="right" v-model="endSystem.data.ahu_type" :options="['单新风处理机组','新回风混合处理机组','单回风处理机组']"></mt-radio>
+                <p class="title">建筑内是否有温度测点<span>*</span></p>
+                <mt-radio align="right" v-model="endSystem.data.is_buildingTempPoint" :options="options"></mt-radio>
+                <div class="alone">
+                    <mt-field label="温度测点的密度（个/平米）：" placeholder="4" type="number" v-model.number="endSystem.data.buildingTempPointNum"></mt-field>
+                </div>
+                <div class="alone">
+                    <mt-field label="夏季室内温度的要求（℃）：" class="required" placeholder="24" type="number" v-model.number="endSystem.data.summer_indoor_temp"></mt-field>
+                </div>
+                <div class="alone">
+                    <mt-field label="夏季室内湿度的要求（%）：" class="required" placeholder="50" type="number" v-model.number="endSystem.data.summer_indoor_humi"></mt-field>
+                </div>
+                <div class="alone">
+                    <mt-field label="冬季室内温度的要求（℃）：" class="required" placeholder="22" type="number" v-model.number="endSystem.data.winter_indoor_temp"></mt-field>
+                </div>
+                <div class="alone">
+                    <mt-field label="冬季室内湿度的要求（%）：" class="required" placeholder="50" type="number" v-model.number="endSystem.data.winter_indoor_humi"></mt-field>
+                </div>
+            </div>
+            <div class="segmenting"></div>
+            <div class="summary">
+                <h3>系统控制参数</h3>
+                <p class="title first">1、AHU是否由温控器自动控制<span>*</span></p>
+                <mt-radio align="right" v-model="endSystem.data.is_ahu_auto_control" :options="options"></mt-radio>
+                <p class="title">2、AHU是否带有可用的电动阀门<span>*</span></p>
+                <mt-radio align="right" v-model="endSystem.data.is_ahu_electric_valve" :options="options"></mt-radio>
+                <p class="title">3、是否为计算机房供冷</p>
+                <mt-radio align="right" v-model="endSystem.data.is_computer_control" :options="options"></mt-radio>
+                <p class="title">4、室内温度是否为自动控制</p>
+                <mt-radio align="right" v-model="endSystem.data.is_indoor_auto_control" :options="options"></mt-radio>
+                <mt-field label="5、末端巡检频率：" class="end" placeholder="每周一次" v-model="endSystem.data.end_check_frequency"></mt-field>
+            </div>
+            <mt-button type="primary" @click.native="endSystemClick">确认</mt-button>
+        </div>
+        <!-- 末端设备 -->
+        <div v-if="endMachine.show" class="common">
+            <header>
+                <i class="iconI back" @click="endMachine.show=false;crew.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>末端设备</h1>
+                <i class="iconI add" @click="addMachine(endMachine)">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-tianjia"></use>
+                    </svg>
+                </i>
+            </header>
+            <div class="machine" v-for="(item,index) in endMachine.data">
+                <div v-show="endMachine.state != index">
+                    <h2 @click="showMachine(index,endMachine,true)">末端设备信息</h2>
+                </div>
+                <div v-show="endMachine.state == index" >
+                    <h2 @click="showMachine(index,endMachine,false)">末端设备信息</h2>
+                    <div class="summary">
+                        <h3>设备信息</h3>
+                        <mt-field label="类型：" class="required" placeholder="新风机组" v-model="item.end_type"></mt-field>
+                        <mt-field label="品牌：" class="required" placeholder="开利" v-model="item.end_brand"></mt-field>
+                        <mt-field label="型号：" class="required" placeholder="FBG0001" v-model="item.end_model"></mt-field>
+                        <mt-field label="数量：" class="required" placeholder="5" type="number" v-model.number="item.end_num"></mt-field>
+                        <mt-field label="电功率(KW)：" class="required" placeholder="20000" type="number" v-model.number="item.end_power"></mt-field>
+                        <mt-field label="送风量(m³/h)：" placeholder="128" type="number" v-model.number="item.send_wind"></mt-field>
+                        <mt-field label="制冷量(KW)：" placeholder="15" type="number" v-model.number="item.end_cool"></mt-field>
+                        <mt-field label="加湿功率(KW)：" placeholder="20" type="number" v-model.number="item.end_humidity_power"></mt-field>
+                    </div>
+                    <div class="segmenting"></div>
+                    <div class="summary">
+                        <h3>设备控制参数</h3>
+                        <p class="title first">1、有无变频启动<span>*</span></p>
+                        <mt-radio align="right" v-model="item.is_change_start" :options="[{label: '有', value: true}, {label: '无', value: 'false'}]"></mt-radio>
+                        <p class="title">2、有无远程控制<span>*</span></p>
+                        <mt-radio align="right" v-model="item.is_long_control" :options="[{label: '有', value: true}, {label: '无', value: 'false'}]"></mt-radio>
+                        <p class="title">3、有无新风引入<span>*</span></p>
+                        <mt-radio align="right" v-model="item.is_new_air" :options="[{label: '有', value: true}, {label: '无', value: 'false'}]"></mt-radio>
+                        <p class="title">4、新风比例为：<span style="vertical-align:top">{{item.new_air_percent}}</span>%</p>
+                        <mt-range v-model="item.new_air_percent">
+                            <div slot="start">0</div>
+                            <div slot="end">100</div>
+                        </mt-range>
+                    </div>
+                    <div class="machine-img">
+                        <i class="iconI" v-show="!item.imgName">
+                            <svg class="icon" aria-hidden="true">
+                                <use xlink:href="#icon-tianjia"></use>
+                            </svg>
+                        </i>
+                        <img :src="item.imgName" v-show="item.imgName" alt="设备图片">
+                        <input type="file" accept="image/*" capture="camera" @change="changeImage($event,item)">
+                    </div>
+                </div>
+            </div>
+            <mt-button type="primary" @click.native="endMachineClick">确认</mt-button>
+        </div>
+        <!-- 制冷系统 -->
+        <div v-if="coolMethod.show" class="common">
+            <header>
+                <i class="iconI back" @click="coolMethod.show=false;crew.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>制冷系统</h1>
+            </header>
+            <div class="summary">
+                <h3>负荷水平</h3>
+                <p class="title first time"><span>*</span>制冷月份</p>
+                <mt-picker :slots="coolMethod.slots1" @change="slots1Change" :visible-item-count='3' ></mt-picker>
+                <p class="title"><span>*</span>制冷系统工作时间</p>
+                <mt-picker :slots="coolMethod.slots2" @change="slots2Change" :visible-item-count='3' ></mt-picker>
+                <mt-field label="低负荷或过渡季节开启的冷机台数：" class="required" placeholder="2大1小" v-model="coolMethod.data.cool_open_low"></mt-field>
+                <mt-field label="高负荷时段开启的冷机台数：" class="required" placeholder="2大1小" v-model="coolMethod.data.cool_open_high"></mt-field>
+                <mt-field label="冷机启停策略：" placeholder="回水水温>7℃增开1台，<7℃卸载1台" type="textarea" v-model="coolMethod.data.cool_machine_start_menthod"></mt-field>
+            </div>
+            <div class="segmenting"></div>
+            <div class="summary">
+                <h3>冷冻水</h3>
+                <mt-field label="低负荷或过渡季节供水温度设定值(℃)：" placeholder="10" type="number" v-model.number="coolMethod.data.ldWater_low_in_set"></mt-field>
+                <mt-field label="低负荷或过渡季节供水温度实际值(℃)：" placeholder="8" type="number" v-model.number="coolMethod.data.ldWater_low_in_actual"></mt-field>
+                <mt-field label="低负荷或过渡季节回水温度实际值(℃)：" placeholder="14" type="number" v-model.number="coolMethod.data.ldWater_low_return_actual"></mt-field>
+                <mt-field label="高负荷时段供水温度设定值(℃)：" placeholder="7" type="number" v-model.number="coolMethod.data.ldWater_high_in_set"></mt-field>
+                <mt-field label="高负荷时段供水温度实际值(℃)：" placeholder="7" type="number" v-model.number="coolMethod.data.ldWater_high_in_actual"></mt-field>
+                <mt-field label="高负荷时段回水温度实际值(℃)：" placeholder="15" type="number" v-model.number="coolMethod.data.ldWater_high_return_actual"></mt-field>
+            </div>
+            <div class="segmenting"></div>
+            <div class="summary cool">
+                <h3>冷却水</h3>
+                <p class="title first">低负荷或过渡季节要求的回水温度范围(℃)</p>
+                <p><input type="number" placeholder="22" v-model="coolMethod.LtemRL">~<input type="number" placeholder="33" v-model="coolMethod.LtemRH"></p>
+                <p class="title">低负荷或过渡季节实际的回水温度范围(℃)</p>
+                <p><input type="number" placeholder="20" v-model="coolMethod.LtemAL">~<input type="number" placeholder="28" v-model="coolMethod.LtemAH"></p>
+                <p class="title">高负荷时段要求的回水温度范围(℃)</p>
+                <p><input type="number" placeholder="22" v-model="coolMethod.HtemRL">~<input type="number" placeholder="33" v-model="coolMethod.HtemRH"></p>
+                <p class="title">高负荷时段实际的回水温度范围(℃)</p>
+                <p><input type="number" placeholder="30" v-model="coolMethod.HtemAL">~<input type="number" placeholder="38" v-model="coolMethod.HtemAH"></p>
+            </div>
+            <mt-button type="primary" @click.native="coolMethodClick">确认</mt-button>
+        </div>
+        <!-- 冷机 -->
+        <div v-if="coolMachine.show" class="common coolMachine">
+            <header>
+                <i class="iconI back" @click="coolMachine.show=false;crew.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>冷机</h1>
+                <i class="iconI add" @click="addMachine(coolMachine)">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-tianjia"></use>
+                    </svg>
+                </i>
+            </header>
+            <div class="machine" v-for="(item,index) in coolMachine.data">
+                <div v-show="coolMachine.state != index">
+                    <h2 @click="showMachine(index,coolMachine,true)">冷机设备信息</h2>
+                </div>
+                <div v-show="coolMachine.state == index" >
+                    <h2 @click="showMachine(index,coolMachine,false)">冷机设备信息</h2>
+                    <div class="summary">
+                        <h3>设备信息</h3>
+                        <p class="title first">主机类型<span>*</span></p>
+                        <mt-radio align="right" v-model="item.machine_type" :options="['螺杆式','离心式','涡旋式']"></mt-radio>
+                        <p class="title">制冷剂类型</p>
+                        <mt-radio align="right" v-model="item.machine_model" :options="['R12','R22','R502','R134a']"></mt-radio>
+                        <mt-field label="厂家：" placeholder="York" v-model="item.machine_vender"></mt-field>
+                        <mt-field label="数量：" class="required" placeholder="6" type="number" v-model.number="item.machine_count"></mt-field>
+                        <mt-field label="单台额定功率(KW)：" class="required" placeholder="362" type="number" v-model.number="item.machine_perPower"></mt-field>
+                        <mt-field label="单台制冷量：" placeholder="1000" class="required" type="number" v-model.number="item.machine_perCool">
+                            <input type="radio" name="unit" v-model="item.unit" value="RT">RT<input type="radio" name="unit" v-model="item.unit" value="KW">KW
+                        </mt-field>
+                        <mt-field label="低负荷或过渡季节冷冻水出水温度(℃)：" placeholder="15" type="number" v-model.number="item.machine_ld_outWaterTempLow"></mt-field>
+                        <mt-field label="高负荷时段冷冻水出水温度(℃)：" placeholder="20" type="number" v-model.number="item.machine_ld_outWaterTempHigh"></mt-field>
+                        <mt-field label="通讯卡供楼宇自动化系统读/写冷机的内部设定："  rows="4" placeholder="只提供干触点用于启停控制，出水水温只能就地调整" type="textarea" v-model="item.machine_card"></mt-field>
+                    </div>
+                    <div class="segmenting"></div>
+                    <div class="summary">
+                        <h3>设备控制参数</h3>
+                        <p class="title first">1、冷冻水和冷却水管上是否安装了手动阀门？</p>
+                        <mt-radio align="right" v-model="item.is_has_hand_valve" :options="options"></mt-radio>
+                        <p class="title">2、手动阀门是否可用？</p>
+                        <mt-radio align="right" v-model="item.is_hand_valve_used" :options="options"></mt-radio>
+                        <p class="title">3、冷冻水和冷却水管上是否安装了电动阀门<span>*</span></p>
+                        <mt-radio align="right" v-model="item.is_has_auto_valve" :options="options"></mt-radio>
+                        <p class="title">4、自动阀门是否可用？：<span>*</span></p>
+                        <mt-radio align="right" v-model="item.is_auto_valve_used" :options="options"></mt-radio>
+                        <p class="title">5、冷机控制依据</p>
+                        <mt-radio align="right" v-model="item.machine_control" :options="['供水温度','回水温度','供回水温差','室外温度','其他']"></mt-radio>
+                    </div>
+                    <div class="machine-img">
+                        <i class="iconI" v-show="!item.imgName">
+                            <svg class="icon" aria-hidden="true">
+                                <use xlink:href="#icon-tianjia"></use>
+                            </svg>
+                        </i>
+                        <img :src="item.imgName" v-show="item.imgName" alt="设备图片">
+                        <input type="file" accept="image/*" capture="camera" @change="changeImage($event,item)">
+                    </div>
+                </div>
+            </div>
+            <mt-button type="primary" @click.native="coolMachineClick">确认</mt-button>
+        </div>
+        <!-- 风冷热泵 -->
+        <div v-if="windCoolMachine.show" class="common coolMachine">
+            <header>
+                <i class="iconI back" @click="windCoolMachine.show=false;crew.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>风冷热泵</h1>
+                <i class="iconI add" @click="addMachine(windCoolMachine)">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-tianjia"></use>
+                    </svg>
+                </i>
+            </header>
+            <div class="machine" v-for="(item,index) in windCoolMachine.data">
+                <div v-show="windCoolMachine.state != index">
+                    <h2 @click="showMachine(index,windCoolMachine,true)">风冷热泵设备信息</h2>
+                </div>
+                <div v-show="windCoolMachine.state == index" >
+                    <h2 @click="showMachine(index,windCoolMachine,false)">风冷热泵设备信息</h2>
+                    <div class="summary">
+                        <h3>设备信息</h3>
+                        <p class="title first">主机类型<span>*</span></p>
+                        <mt-radio align="right" v-model="item.machine_type" :options="['螺杆式','离心式','涡旋式']"></mt-radio>
+                        <mt-field label="厂家：" placeholder="York" v-model="item.machine_vender"></mt-field>
+                        <mt-field label="数量：" class="required" placeholder="6" type="number" v-model.number="item.machine_count"></mt-field>
+                        <mt-field label="单台额定功率(KW)：" class="required" placeholder="362" type="number" v-model.number="item.machine_perPower"></mt-field>
+                        <mt-field label="单台制冷量(KW)：" placeholder="1000" class="required" type="number" v-model.number="item.machine_perCool"></mt-field>
+                        <mt-field label="低负荷或过渡季节冷冻水出水温度(℃)：" placeholder="15" type="number" v-model.number="item.machine_ld_outWaterTempLow"></mt-field>
+                        <mt-field label="高负荷时段冷冻水出水温度(℃)：" placeholder="20" type="number" v-model.number="item.machine_ld_outWaterTempHigh"></mt-field>
+                        <mt-field label="通讯卡供楼宇自动化系统读/写冷机的内部设定："  rows="4" placeholder="只提供干触点用于启停控制，出水水温只能就地调整" type="textarea" v-model="item.machine_control"></mt-field>
+                    </div>
+                    <div class="segmenting"></div>
+                    <div class="summary">
+                        <h3>设备控制参数</h3>
+                        <p class="title first">1、冷冻水和冷却水管上是否安装了手动阀门？</p>
+                        <mt-radio align="right" v-model="item.is_has_hand_valve" :options="options"></mt-radio>
+                        <p class="title">2、手动阀门是否可用？</p>
+                        <mt-radio align="right" v-model="item.is_hand_valve_used" :options="options"></mt-radio>
+                        <p class="title">3、冷冻水和冷却水管上是否安装了电动阀门<span>*</span></p>
+                        <mt-radio align="right" v-model="item.is_has_auto_valve" :options="options"></mt-radio>
+                        <p class="title">4、自动阀门是否可用？：<span>*</span></p>
+                        <mt-radio align="right" v-model="item.is_auto_valve_used" :options="options"></mt-radio>
+                        <p class="title">5、风冷热泵控制依据</p>
+                        <mt-radio align="right" v-model="item.machine_control" :options="['供水温度','回水温度','供回水温差','室外温度','其他']"></mt-radio>
+                    </div>
+                    <div class="machine-img">
+                        <i class="iconI" v-show="!item.imgName">
+                            <svg class="icon" aria-hidden="true">
+                                <use xlink:href="#icon-tianjia"></use>
+                            </svg>
+                        </i>
+                        <img :src="item.imgName" v-show="item.imgName" alt="设备图片">
+                        <input type="file" accept="image/*" capture="camera" @change="changeImage($event,item)">
+                    </div>
+                </div>
+            </div>
+            <mt-button type="primary" @click.native="windCoolMachineClick">确认</mt-button>
+        </div>
+        <!-- 地源热泵 -->
+        <div v-if="earthCoolMachine.show" class="common coolMachine">
+            <header>
+                <i class="iconI back" @click="earthCoolMachine.show=false;crew.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>地源热泵</h1>
+                <i class="iconI add" @click="addMachine(earthCoolMachine)">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-tianjia"></use>
+                    </svg>
+                </i>
+            </header>
+            <div class="machine" v-for="(item,index) in earthCoolMachine.data">
+                <div v-show="earthCoolMachine.state != index">
+                    <h2 @click="showMachine(index,earthCoolMachine,true)">地源热泵设备信息</h2>
+                </div>
+                <div v-show="earthCoolMachine.state == index" >
+                    <h2 @click="showMachine(index,earthCoolMachine,false)">地源热泵设备信息</h2>
+                    <div class="summary">
+                        <h3>设备信息</h3>
+                        <p class="title first">主机类型<span>*</span></p>
+                        <mt-radio align="right" v-model="item.machine_type" :options="['螺杆式','离心式','涡旋式']"></mt-radio>
+                        <mt-field label="厂家：" placeholder="York" v-model="item.machine_vender"></mt-field>
+                        <mt-field label="数量：" class="required" placeholder="6" type="number" v-model.number="item.machine_count"></mt-field>
+                        <mt-field label="单台额定功率(KW)：" class="required" placeholder="362" type="number" v-model.number="item.machine_perPower"></mt-field>
+                        <mt-field label="单台制冷量：" placeholder="1000" class="required" type="number" v-model.number="item.machine_perCool">
+                            <input type="radio" name="unit" v-model="item.unit" value="RT">RT<input type="radio" name="unit" v-model="item.unit" value="KW">KW
+                        </mt-field>
+                        <mt-field label="低负荷或过渡季节冷冻水出水温度(℃)：" placeholder="10" type="number" v-model.number="item.machine_ld_outWaterTempLow"></mt-field>
+                        <mt-field label="高负荷时段冷冻水出水温度(℃)：" placeholder="7" type="number" v-model.number="item.machine_ld_outWaterTempHigh"></mt-field>
+                        <mt-field label="低负荷或过渡季节热水出水温度(℃)：" placeholder="45" type="number" v-model.number="item.machine_hot_outWaterTempLow"></mt-field>
+                        <mt-field label="高负荷时段热水出水温度(℃)：" placeholder="50" type="number" v-model.number="item.machine_hot_outWaterTempHigh"></mt-field>
+                        <mt-field label="通讯卡供楼宇自动化系统读/写冷机的内部设定："  rows="4" placeholder="只提供干触点用于启停控制，出水水温只能就地调整" type="textarea" v-model="item.machine_card"></mt-field>
+                    </div>
+                    <div class="segmenting"></div>
+                    <div class="summary">
+                        <h3>设备控制参数</h3>
+                        <p class="title first">1、冷冻水和冷却水管上是否安装了手动阀门？</p>
+                        <mt-radio align="right" v-model="item.is_has_hand_valve" :options="options"></mt-radio>
+                        <p class="title">2、手动阀门是否可用？</p>
+                        <mt-radio align="right" v-model="item.is_hand_valve_used" :options="options"></mt-radio>
+                        <p class="title">3、冷冻水和冷却水管上是否安装了电动阀门<span>*</span></p>
+                        <mt-radio align="right" v-model="item.is_has_auto_valve" :options="options"></mt-radio>
+                        <p class="title">4、自动阀门是否可用？：<span>*</span></p>
+                        <mt-radio align="right" v-model="item.is_auto_valve_used" :options="options"></mt-radio>
+                        <p class="title">5、地源热泵控制依据</p>
+                        <mt-radio align="right" v-model="item.machine_control" :options="['供水温度','回水温度','供回水温差','室外温度','其他']"></mt-radio>
+                    </div>
+                    <div class="machine-img">
+                        <i class="iconI" v-show="!item.imgName">
+                            <svg class="icon" aria-hidden="true">
+                                <use xlink:href="#icon-tianjia"></use>
+                            </svg>
+                        </i>
+                        <img :src="item.imgName" v-show="item.imgName" alt="设备图片">
+                        <input type="file" accept="image/*" capture="camera" @change="changeImage($event,item)">
+                    </div>
+                </div>
+            </div>
+            <mt-button type="primary" @click.native="earthCoolMachineClick">确认</mt-button>
+        </div>
+        <!-- 循环水泵 -->
+        <div v-if="loopPump.show" class="common coolMachine">
+            <header>
+                <i class="iconI back" @click="loopPump.show=false;crew.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>循环水泵</h1>
+                <i class="iconI add" @click="addMachine(loopPump)">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-tianjia"></use>
+                    </svg>
+                </i>
+            </header>
+            <div class="machine" v-for="(item,index) in loopPump.data">
+                <div v-show="loopPump.state != index">
+                    <h2 @click="showMachine(index,loopPump,true)">循环水泵设备信息</h2>
+                </div>
+                <div v-show="loopPump.state == index" >
+                    <h2 @click="showMachine(index,loopPump,false)">循环水泵设备信息</h2>
+                    <div class="summary">
+                        <h3>设备信息</h3>
+                        <mt-field label="用途：" placeholder="冷冻水循环泵" v-model="item.machine_used"></mt-field>
+                        <mt-field label="数量：" class="required" placeholder="10" type="number" v-model.number="item.machine_count"></mt-field>
+                        <mt-field label="单台额定功率(KW)：" class="required" placeholder="90" type="number" v-model.number="item.machine_power"></mt-field>
+                        <mt-field label="单台额定流量(m³/h)：" class="required" placeholder="100" type="number" v-model.number="item.machine_flow"></mt-field>
+                        <mt-field label="扬程(m)：" placeholder="25" type="number" v-model.number="item.machine_lift"></mt-field>
+                        <mt-field label="低负荷或过渡季节水泵开启台数：" placeholder="2" type="number" v-model.number="item.machine_start_low"></mt-field>
+                        <mt-field label="高负荷时段水泵开启台数：" placeholder="3" type="number" v-model.number="item.machine_start_high"></mt-field>
+                    </div>
+                    <div class="segmenting"></div>
+                    <div class="summary">
+                        <h3>设备控制参数</h3>
+                        <p class="title first">1、启动方式<span>*</span></p>
+                        <mt-radio align="right" v-model="item.machine_start_way" :options="['变频','软启动','星三角','全压']"></mt-radio>
+                        <p class="title">2、是否可远程获得工作状态？</p>
+                        <mt-radio align="right" v-model="item.is_get_work_status" :options="options"></mt-radio>
+                        <p class="title">3、是否可进行远程操作？</p>
+                        <mt-radio align="right" v-model="item.is_work_status" :options="options"></mt-radio>
+                    </div>
+                    <div class="machine-img">
+                        <i class="iconI" v-show="!item.imgName">
+                            <svg class="icon" aria-hidden="true">
+                                <use xlink:href="#icon-tianjia"></use>
+                            </svg>
+                        </i>
+                        <img :src="item.imgName" v-show="item.imgName" alt="设备图片">
+                        <input type="file" accept="image/*" capture="camera" @change="changeImage($event,item)">
+                    </div>
+                </div>
+            </div>
+            <mt-button type="primary" @click.native="loopPumpClick">确认</mt-button>
+        </div>
+        <!-- 冷却塔 -->
+        <div v-if="tower.show" class="common coolMachine">
+            <header>
+                <i class="iconI back" @click="tower.show=false;crew.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>冷却塔</h1>
+                <i class="iconI add" @click="addMachine(tower)">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-tianjia"></use>
+                    </svg>
+                </i>
+            </header>
+            <div class="machine" v-for="(item,index) in tower.data">
+                <div v-show="tower.state != index">
+                    <h2 @click="showMachine(index,tower,true)">冷却塔设备信息</h2>
+                </div>
+                <div v-show="tower.state == index" >
+                    <h2 @click="showMachine(index,tower,false)">冷却塔设备信息</h2>
+                    <div class="summary">
+                        <h3>设备信息</h3>
+                        <p class="title arrow" @click='tower.sheetVisible=true;tower.indexT=index'><i>*</i>类型： <span v-text="item.machine_used"></span><span class="arrow2" v-if="item.machine_used==''">&gt;</span></p>
+                        <mt-field label="数量：" class="required" placeholder="15" type="number" v-model.number="item.machine_count"></mt-field>
+                        <mt-field label="风机功率(KW)：" class="required" placeholder="15" type="number" v-model.number="item.machine_power"></mt-field>
+                        <mt-field label="低负荷或过渡季节风机开启台数：" placeholder="8" type="number" v-model.number="item.machine_start_low"></mt-field>
+                        <mt-field label="高负荷时段风机开启台数：" placeholder="10" type="number" v-model.number="item.machine_start_high"></mt-field>
+                        <mt-field label="内循环水泵（闭式冷却塔）功率(KW)：" placeholder="6" type="number" v-model.number="item.machine_pump_power"></mt-field>
+                        <mt-field label="内循环水泵（闭式冷却塔）台数：" placeholder="2" type="number" v-model.number="item.machine_pump_count"></mt-field>
+                    </div>
+                    <div class="segmenting"></div>
+                    <div class="summary">
+                        <h3>设备控制参数</h3>
+                        <p class="title first">1、风机是否变频<span>*</span></p>
+                        <mt-radio align="right" v-model="item.is_change_windHz" :options="options"></mt-radio>
+                        <p class="title">2、内循环水泵（闭式冷却塔）是否变频</p>
+                        <mt-radio align="right" v-model="item.is_change_pumpHz" :options="options"></mt-radio>
+                        <p class="title">3、各台冷却塔是否安装了手动阀门</p>
+                        <mt-radio align="right" v-model="item.is_hand_status" :options="options"></mt-radio>
+                        <p class="title">4、手动阀门是否可用？</p>
+                        <mt-radio align="right" v-model="item.is_hand_status_used" :options="options"></mt-radio>
+                        <p class="title">5、各台冷却塔是否安装了电动阀门</p>
+                        <mt-radio align="right" v-model="item.is_auto_status" :options="options"></mt-radio>
+                        <p class="title">6、自动阀门是否可用？</p>
+                        <mt-radio align="right" v-model="item.is_auto_status_used" :options="options"></mt-radio>
+                        <p class="title">7、冷却塔是否可远程获得工作参数<span>*</span></p>
+                        <mt-radio align="right" v-model="item.is_get_work_status" :options="options"></mt-radio>
+                        <p class="title">8、冷却塔是否可进行远程操作<span>*</span></p>
+                        <mt-radio align="right" v-model="item.is_work_status" :options="options"></mt-radio>
+                    </div>
+                    <div class="machine-img">
+                        <i class="iconI" v-show="!item.imgName">
+                            <svg class="icon" aria-hidden="true">
+                                <use xlink:href="#icon-tianjia"></use>
+                            </svg>
+                        </i>
+                        <img :src="item.imgName" v-show="item.imgName" alt="设备图片">
+                        <input type="file" accept="image/*" capture="camera" @change="changeImage($event,item)">
+                    </div>
+                </div>
+            </div>
+            <mt-button type="primary" @click.native="towerClick">确认</mt-button>
+            <mt-actionsheet :actions="tower.actions" v-model="tower.sheetVisible"></mt-actionsheet>
+        </div>
+        <!-- 蓄冰系统 -->
+        <div v-if="ice.show" class="common coolMachine">
+            <header>
+                <i class="iconI back" @click="ice.show=false;crew.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>蓄冰系统</h1>
+                <i class="iconI add" @click="addMachine(coolMachine)">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-tianjia"></use>
+                    </svg>
+                </i>
+            </header>
+            <div class="summary">
+                <h3>设备信息</h3>
+                <p class="title first">水蓄冷还是冰蓄冷<span>*</span></p>
+                <mt-radio align="right" v-model="ice.data.machine_type" :options="['水蓄冷','冰蓄冷']"></mt-radio>
+                <mt-field label="容量(T)：" class="required" placeholder="15" type="number" v-model.number="ice.data.machine_capacity"></mt-field>
+                <p class="title">控制策略<span>*</span></p>
+                <textarea class="ice"></textarea>
+            </div>
+            <mt-button type="primary" @click.native="iceClick">确认</mt-button>
+            <mt-actionsheet :actions="tower.actions" v-model="tower.sheetVisible"></mt-actionsheet>
+        </div>
+        <!-- 供热系统 -->
+        <div v-if="hotMethod.show" class="common">
+            <header>
+                <i class="iconI back" @click="hotMethod.show=false;crew.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>供热系统</h1>
+            </header>
+            <div class="summary">
+                <h3>负荷水平</h3>
+                <p class="title first time"><span>*</span>供热月份</p>
+                <mt-picker :slots="hotMethod.slots1" @change="slots3Change" :visible-item-count='3' ></mt-picker>
+                <p class="title"><span>*</span>供热系统工作时间</p>
+                <mt-picker :slots="hotMethod.slots2" @change="slots4Change" :visible-item-count='3' ></mt-picker>
+                <mt-field label="低负荷或过渡季节开启的锅炉台数：" class="required" type="number" placeholder="2" v-model="hotMethod.data.cool_open_low"></mt-field>
+                <mt-field label="高负荷时段开启的锅炉台数：" class="required" type="number" placeholder="3" v-model="hotMethod.data.cool_open_high"></mt-field>
+                <mt-field label="锅炉启停策略：" placeholder="温度高于45度" type="textarea" v-model="hotMethod.data.cool_machine_start_menthod"></mt-field>
+            </div>
+            <div class="segmenting"></div>
+            <div class="summary">
+                <h3>采暖热水温度</h3>
+                <mt-field label="低负荷或过渡季节供水温度设定值(℃)：" placeholder="35" type="number" v-model.number="hotMethod.data.ldWater_low_in_set"></mt-field>
+                <mt-field label="低负荷或过渡季节供水温度实际值(℃)：" placeholder="35" type="number" v-model.number="hotMethod.data.ldWater_low_in_actual"></mt-field>
+                <mt-field label="低负荷或过渡季节回水温度实际值(℃)：" placeholder="30" type="number" v-model.number="hotMethod.data.ldWater_low_return_actual"></mt-field>
+                <mt-field label="高负荷时段供水温度设定值(℃)：" placeholder="45" type="number" v-model.number="hotMethod.data.ldWater_high_in_set"></mt-field>
+                <mt-field label="高负荷时段供水温度实际值(℃)：" placeholder="43" type="number" v-model.number="hotMethod.data.ldWater_high_in_actual"></mt-field>
+                <mt-field label="高负荷时段回水温度实际值(℃)：" placeholder="30" type="number" v-model.number="hotMethod.data.ldWater_high_return_actual"></mt-field>
+            </div>
+            <mt-button type="primary" @click.native="hotMethodClick">确认</mt-button>
+        </div>
+        <!-- 锅炉 -->
+        <div v-if="boilerMachine.show" class="common coolMachine">
+            <header>
+                <i class="iconI back" @click="boilerMachine.show=false;crew.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>锅炉</h1>
+                <i class="iconI add" @click="addMachine(boilerMachine)">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-tianjia"></use>
+                    </svg>
+                </i>
+            </header>
+            <div class="machine" v-for="(item,index) in boilerMachine.data">
+                <div v-show="boilerMachine.state != index">
+                    <h2 @click="showMachine(index,boilerMachine,true)">锅炉设备信息</h2>
+                </div>
+                <div v-show="boilerMachine.state == index" >
+                    <h2 @click="showMachine(index,boilerMachine,false)">锅炉设备信息</h2>
+                    <div class="summary">
+                        <h3>设备信息</h3>
+                        <mt-field label="品牌：" class="required" placeholder="富士顿" v-model="item.bolier_brand"></mt-field>
+                        <mt-field label="型号：" placeholder="WH-220" v-model="item.bolier_model"></mt-field>
+                        <mt-field label="数量：" class="required" placeholder="2" type="number" v-model.number="item.bolier_num"></mt-field>
+                        <mt-field label="供热功率：" placeholder="350" class="required" type="number" v-model.number="item.boiler_power">
+                            <input type="radio" name="unit" v-model="item.unit" value="MW">MW<input type="radio" name="unit" v-model="item.unit" value="T/h">T/h
+                        </mt-field>
+                        <p class="title"><span>*</span>锅炉类型</p>
+                        <mt-radio align="right" v-model="item.boiler_type" :options="['热水锅炉','蒸汽锅炉']"></mt-radio>
+                        <p class="title"><span>*</span>燃料种类</p>
+                        <mt-radio align="right" v-model="item.fuel_type" :options="['天然气','油']"></mt-radio>
+                        <mt-field label="燃料额定消耗量（m3/h）：" class="required" placeholder="250" type="number" v-model.number="item.fuel_used"></mt-field>
+                        <mt-field label="低负荷或过渡季节热水出水温度(℃)：" placeholder="35" type="number" v-model.number="item.hot_water_out_low"></mt-field>
+                        <mt-field label="高负荷时段热水出水温度(℃)：" placeholder="45" type="number" v-model.number="item.hot_water_out_high"></mt-field>
+                        <p class="title">锅炉控制依据</p>
+                        <mt-radio align="right" v-model="item.boiler_control" :options="['供水温度','回水温度','供回水温差','室外温度','其他']"></mt-radio>
+                    </div>
+                    <div class="machine-img">
+                        <i class="iconI" v-show="!item.imgName">
+                            <svg class="icon" aria-hidden="true">
+                                <use xlink:href="#icon-tianjia"></use>
+                            </svg>
+                        </i>
+                        <img :src="item.imgName" v-show="item.imgName" alt="设备图片">
+                        <input type="file" accept="image/*" capture="camera" @change="changeImage($event,item)">
+                    </div>
+                </div>
+            </div>
+            <mt-button type="primary" @click.native="boilerMachineClick">确认</mt-button>
+        </div>
+        <!-- 溴化锂机 -->
+        <div v-if="liMachine.show" class="common coolMachine">
+            <header>
+                <i class="iconI back" @click="liMachine.show=false;crew.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>溴化锂机组</h1>
+                <i class="iconI add" @click="addMachine(liMachine)">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-tianjia"></use>
+                    </svg>
+                </i>
+            </header>
+            <div class="machine" v-for="(item,index) in liMachine.data">
+                <div v-show="liMachine.state != index">
+                    <h2 @click="showMachine(index,liMachine,true)">溴化锂机设备信息</h2>
+                </div>
+                <div v-show="liMachine.state == index" >
+                    <h2 @click="showMachine(index,liMachine,false)">溴化锂机设备信息</h2>
+                    <div class="summary">
+                        <h3>设备信息</h3>
+                        <mt-field label="品牌：" class="required" placeholder="双良" v-model="item.li_brand"></mt-field>
+                        <mt-field label="型号：" placeholder="SH-220" v-model="item.li_model"></mt-field>
+                        <mt-field label="数量：" class="required" placeholder="2" type="number" v-model.number="item.li_num"></mt-field>
+                        <mt-field label="供热功率：" placeholder="10" class="required" type="number" v-model.number="item.li_power">
+                            <input type="radio" name="unit" v-model="item.unit" value="MW">MW<input type="radio" name="unit" v-model="item.unit" value="T/h">T/h
+                        </mt-field>
+                        <p class="title"><span>*</span>机组类型</p>
+                        <mt-radio align="right" v-model="item.li_type" :options="['直燃型','蒸汽型','热水型','余热型','复合型']"></mt-radio>
+                        <p class="title"><span>*</span>第几类机组</p>
+                        <mt-radio align="right" v-model="item.machine_type" :options="['第一类','第二类']"></mt-radio>
+                        <mt-field label="高温热源种类：" class="required" placeholder="天然气燃烧" v-model="item.high_hot"></mt-field>
+                        <mt-field label="低温热源种类：" class="required" placeholder="冷却水" v-model="item.low_hot"></mt-field>
+                        <mt-field label="机组电功率(m3/h)：" class="required" placeholder="42" type="number" v-model.number="item.machine_power"></mt-field>
+                        <mt-field label="燃气消耗量(m3/h)：" class="required" placeholder="250" type="number" v-model.number="item.gas_used"></mt-field>
+                        <mt-field label="低负荷或过渡季节热水出水温度(℃)：" placeholder="15" type="number" v-model.number="item.hot_water_out_low"></mt-field>
+                        <mt-field label="高负荷时段热水出水温度(℃)：" placeholder="20" type="number" v-model.number="item.hot_water_out_high"></mt-field>
+                        <p class="title">溴化锂机组控制依据</p>
+                        <mt-radio align="right" v-model="item.boiler_control" :options="['供水温度','回水温度','供回水温差','室外温度','其他']"></mt-radio>
+                    </div>
+                    <div class="machine-img">
+                        <i class="iconI" v-show="!item.imgName">
+                            <svg class="icon" aria-hidden="true">
+                                <use xlink:href="#icon-tianjia"></use>
+                            </svg>
+                        </i>
+                        <img :src="item.imgName" v-show="item.imgName" alt="设备图片">
+                        <input type="file" accept="image/*" capture="camera" @change="changeImage($event,item)">
+                    </div>
+                </div>
+            </div>
+            <mt-button type="primary" @click.native="liMachineClick">确认</mt-button>
+        </div>
+        <!-- 燃煤锅炉 -->
+        <div v-if="coalMachine.show" class="common coolMachine">
+            <header>
+                <i class="iconI back" @click="coalMachine.show=false;crew.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>燃煤锅炉</h1>
+                <i class="iconI add" @click="addMachine(coalMachine)">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-tianjia"></use>
+                    </svg>
+                </i>
+            </header>
+            <div class="machine" v-for="(item,index) in coalMachine.data">
+                <div v-show="coalMachine.state != index">
+                    <h2 @click="showMachine(index,coalMachine,true)">燃煤锅炉设备信息</h2>
+                </div>
+                <div v-show="coalMachine.state == index" >
+                    <h2 @click="showMachine(index,coalMachine,false)">燃煤锅炉设备信息</h2>
+                    <div class="summary">
+                        <h3>设备信息</h3>
+                        <mt-field label="品牌：" class="required" placeholder="富士顿" v-model="item.bolier_brand"></mt-field>
+                        <mt-field label="型号：" placeholder="WH-220" v-model="item.bolier_model"></mt-field>
+                        <mt-field label="数量：" class="required" placeholder="2" type="number" v-model.number="item.bolier_num"></mt-field>
+                        <mt-field label="安装功率：" placeholder="350" class="required" type="number" v-model.number="item.boiler_power">
+                            <input type="radio" name="unit" v-model="item.unit" value="MW">MW<input type="radio" name="unit" v-model="item.unit" value="T/h">T/h
+                        </mt-field>
+                        <p class="title"><span>*</span>锅炉类型</p>
+                        <mt-radio align="right" v-model="item.boiler_type" :options="['热水锅炉','蒸汽锅炉']"></mt-radio>
+                        <mt-field label="锅炉承压(Mpa)" class="required" placeholder="1.2" type="number" v-model.number="item.boiler_press"></mt-field>
+                        <p class="title"><span>*</span>设计锅炉效率</p>
+                        <p class="title">设计锅炉效率<span style="vertical-align:top">{{coalMachine.data.boiler_ratio}}</span>%</p>
+                        <mt-range v-model="coalMachine.data.boiler_ratio">
+                            <div slot="start">0</div>
+                            <div slot="end">100</div>
+                        </mt-range>
+                        <mt-field label="设计燃煤耗量(kg/h)" class="required" placeholder="5" type="number" v-model.number="item.boiler_coal"></mt-field>
+                        <mt-field label="燃煤种类：" class="required" placeholder="褐煤" v-model="item.fuel_type"></mt-field>
+                        <mt-field label="燃煤单价(元/kg)" class="required" placeholder="5000" type="number" v-model.number="item.money_coal"></mt-field>
+                        <mt-field label="低负荷或过渡季节热水出水温度(℃)：" placeholder="85" type="number" v-model.number="item.hot_water_out_low"></mt-field>
+                        <mt-field label="高负荷时段热水出水温度(℃)：" placeholder="90" type="number" v-model.number="item.hot_water_out_high"></mt-field>
+                        <p class="title">燃煤锅炉控制依据</p>
+                        <mt-radio align="right" v-model="item.boiler_control" :options="['供水温度','回水温度','供回水温差','室外温度','其他']"></mt-radio>
+                    </div>
+                    <div class="machine-img">
+                        <i class="iconI" v-show="!item.imgName">
+                            <svg class="icon" aria-hidden="true">
+                                <use xlink:href="#icon-tianjia"></use>
+                            </svg>
+                        </i>
+                        <img :src="item.imgName" v-show="item.imgName" alt="设备图片">
+                        <input type="file" accept="image/*" capture="camera" @change="changeImage($event,item)">
+                    </div>
+                </div>
+            </div>
+            <mt-button type="primary" @click.native="coalMachineClick">确认</mt-button>
+        </div>
+        <!-- 市政供热 -->
+        <div v-if="govMachine.show" class="common coolMachine">
+            <header>
+                <i class="iconI back" @click="govMachine.show=false;crew.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>市政供热</h1>
+                <i class="iconI add" @click="addMachine(govMachine)">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-tianjia"></use>
+                    </svg>
+                </i>
+            </header>
+            <div class="machine" v-for="(item,index) in govMachine.data">
+                <div v-show="govMachine.state != index">
+                    <h2 @click="showMachine(index,govMachine,true)">市政供热设备信息</h2>
+                </div>
+                <div v-show="govMachine.state == index" >
+                    <h2 @click="showMachine(index,govMachine,false)">市政供热设备信息</h2>
+                    <div class="summary">
+                        <h3>设备信息</h3>
+                        <p class="title"><span>*</span>热源类型</p>
+                        <mt-radio align="right" v-model="item.hot_type" :options="['蒸汽','热水']"></mt-radio>
+                        <mt-field label="供应容量：" placeholder="100" class="required" type="number" v-model.number="item.hot_content">
+                            <input type="radio" name="unit" v-model="item.unit" value="MW">MW<input type="radio" name="unit" v-model="item.unit" value="T/h">T/h
+                        </mt-field>
+                        <p class="title"><span>*</span>计量方式</p>
+                        <mt-radio align="right" v-model="item.hot_way" :options="['元/天','元/m2','元/t']"></mt-radio>
+                        <mt-field label="计量单价：" placeholder="2" type="number" v-model.number="item.hot_moeny"></mt-field>
+                        <mt-field label="低负荷或过渡季节供应温度(℃)：" placeholder="" type="number" v-model.number="item.hot_temp_out_low"></mt-field>
+                        <mt-field label="高负荷时段供应温度(℃)：" placeholder="" type="number" v-model.number="item.hot_temp_out_high"></mt-field>
+                        <p class="title">供应容量控制依据</p>
+                        <mt-radio align="right" v-model="item.hot_control" :options="['供水温度','回水温度','供回水温差','室外温度','其他']"></mt-radio>
+                    </div>
+                    <div class="machine-img">
+                        <i class="iconI" v-show="!item.imgName">
+                            <svg class="icon" aria-hidden="true">
+                                <use xlink:href="#icon-tianjia"></use>
+                            </svg>
+                        </i>
+                        <img :src="item.imgName" v-show="item.imgName" alt="设备图片">
+                        <input type="file" accept="image/*" capture="camera" @change="changeImage($event,item)">
+                    </div>
+                </div>
+            </div>
+            <mt-button type="primary" @click.native="govMachineClick">确认</mt-button>
+        </div>
+        <!-- 热力站供热 -->
+        <div v-if="stationMachine.show" class="common coolMachine">
+            <header>
+                <i class="iconI back" @click="stationMachine.show=false;crew.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>热力站供热</h1>
+                <i class="iconI add" @click="addMachine(stationMachine)">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-tianjia"></use>
+                    </svg>
+                </i>
+            </header>
+            <div class="machine" v-for="(item,index) in stationMachine.data">
+                <div v-show="stationMachine.state != index">
+                    <h2 @click="showMachine(index,stationMachine,true)">热力站供热设备信息</h2>
+                </div>
+                <div v-show="stationMachine.state == index" >
+                    <h2 @click="showMachine(index,stationMachine,false)">热力站供热设备信息</h2>
+                    <div class="summary">
+                        <h3>设备信息</h3>
+                        <p class="title"><span>*</span>热源类型</p>
+                        <mt-radio align="right" v-model="item.hot_type" :options="['蒸汽','热水']"></mt-radio>
+                        <mt-field label="供应容量：" placeholder="100" class="required" type="number" v-model.number="item.hot_content">
+                            <input type="radio" name="unit" v-model="item.unit" value="MW">MW<input type="radio" name="unit" v-model="item.unit" value="T/h">T/h
+                        </mt-field>
+                        <p class="title"><span>*</span>计量方式</p>
+                        <mt-radio align="right" v-model="item.hot_way" :options="['元/天','元/m2','元/t']"></mt-radio>
+                        <mt-field label="计量单价：" placeholder="2" type="number" v-model.number="item.hot_moeny"></mt-field>
+                        <mt-field label="低负荷或过渡季节供应温度(℃)：" placeholder="" type="number" v-model.number="item.hot_temp_out_low"></mt-field>
+                        <mt-field label="高负荷时段供应温度(℃)：" placeholder="" type="number" v-model.number="item.hot_temp_out_high"></mt-field>
+                        <p class="title">供应容量控制依据</p>
+                        <mt-radio align="right" v-model="item.hot_control" :options="['供水温度','回水温度','供回水温差','室外温度','其他']"></mt-radio>
+                    </div>
+                    <div class="machine-img">
+                        <i class="iconI" v-show="!item.imgName">
+                            <svg class="icon" aria-hidden="true">
+                                <use xlink:href="#icon-tianjia"></use>
+                            </svg>
+                        </i>
+                        <img :src="item.imgName" v-show="item.imgName" alt="设备图片">
+                        <input type="file" accept="image/*" capture="camera" @change="changeImage($event,item)">
+                    </div>
+                </div>
+            </div>
+            <mt-button type="primary" @click.native="stationMachineClick">确认</mt-button>
+        </div>
+        <!-- 电锅炉 -->
+        <div v-if="eBoilerMachine.show" class="common coolMachine">
+            <header>
+                <i class="iconI back" @click="eBoilerMachine.show=false;crew.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>电锅炉</h1>
+                <i class="iconI add" @click="addMachine(eBoilerMachine)">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-tianjia"></use>
+                    </svg>
+                </i>
+            </header>
+            <div class="machine" v-for="(item,index) in eBoilerMachine.data">
+                <div v-show="eBoilerMachine.state != index">
+                    <h2 @click="showMachine(index,eBoilerMachine,true)">电锅炉设备信息</h2>
+                </div>
+                <div v-show="eBoilerMachine.state == index" >
+                    <h2 @click="showMachine(index,eBoilerMachine,false)">电锅炉设备信息</h2>
+                    <div class="summary">
+                        <h3>设备信息</h3>
+                        <mt-field label="品牌：" class="required" placeholder="富士顿" v-model="item.bolier_brand"></mt-field>
+                        <mt-field label="型号：" placeholder="WH-220" v-model="item.bolier_model"></mt-field>
+                        <mt-field label="数量：" class="required" placeholder="2" type="number" v-model.number="item.bolier_num"></mt-field>
+                        <mt-field label="供热功率（MW）：" placeholder="350" class="required" type="number" v-model.number="item.boiler_power"></mt-field>
+                        <p class="title"><span>*</span>锅炉类型</p>
+                        <mt-radio align="right" v-model="item.boiler_type" :options="['热水锅炉','蒸汽锅炉']"></mt-radio>
+                        <mt-field label="低负荷或过渡季节热水出水温度(℃)：" placeholder="35" type="number" v-model.number="item.hot_water_out_low"></mt-field>
+                        <mt-field label="高负荷时段热水出水温度(℃)：" placeholder="45" type="number" v-model.number="item.hot_water_out_high"></mt-field>
+                        <p class="title">锅炉控制依据</p>
+                        <mt-radio align="right" v-model="item.boiler_control" :options="['供水温度','回水温度','供回水温差','室外温度','其他']"></mt-radio>
+                    </div>
+                    <div class="machine-img">
+                        <i class="iconI" v-show="!item.imgName">
+                            <svg class="icon" aria-hidden="true">
+                                <use xlink:href="#icon-tianjia"></use>
+                            </svg>
+                        </i>
+                        <img :src="item.imgName" v-show="item.imgName" alt="设备图片">
+                        <input type="file" accept="image/*" capture="camera" @change="changeImage($event,item)">
+                    </div>
+                </div>
+            </div>
+            <mt-button type="primary" @click.native="eBoilerMachineClick">确认</mt-button>
+        </div>
+        <!-- 换热器 -->
+        <div v-if="bhMachine.show" class="common coolMachine">
+            <header>
+                <i class="iconI back" @click="bhMachine.show=false;crew.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>换热器</h1>
+                <i class="iconI add" @click="addMachine(bhMachine)">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-tianjia"></use>
+                    </svg>
+                </i>
+            </header>
+            <div class="machine" v-for="(item,index) in bhMachine.data">
+                <div v-show="bhMachine.state != index">
+                    <h2 @click="showMachine(index,bhMachine,true)">换热器设备信息</h2>
+                </div>
+                <div v-show="bhMachine.state == index" >
+                    <h2 @click="showMachine(index,bhMachine,false)">换热器设备信息</h2>
+                    <div class="summary">
+                        <h3>设备信息</h3>
+                        <mt-field label="数量：" class="required" placeholder="2" type="number" v-model.number="item.bh_num"></mt-field>
+                        <p class="title"><span>*</span>换热器类型</p>
+                        <mt-radio align="right" v-model="item.bh_type" :options="['汽-水','水-水']"></mt-radio>
+                    </div>
+                    <div class="segmenting"></div>
+                    <div class="summary">
+                        <h3>设备控制参数</h3>
+                        <p class="title first">1、一次侧和二次侧水管上是否安装了手动阀门<span>*</span></p>
+                        <mt-radio align="right" v-model="item.is_hand_status" :options="options"></mt-radio>
+                        <p class="title">2、手动阀门是否可用<span>*</span></p>
+                        <mt-radio align="right" v-model="item.is_hand_used" :options="options"></mt-radio>
+                        <p class="title">3、一次侧和二次侧水管上是否安装了电动阀门<span>*</span></p>
+                        <mt-radio align="right" v-model="item.is_auto_status" :options="options"></mt-radio>
+                        <p class="title">4、电动阀门是否可用<span>*</span></p>
+                        <mt-radio align="right" v-model="item.is_auto_used" :options="options"></mt-radio>
+                        <p class="title">5、阀门远程可控<span>*</span></p>
+                        <mt-radio align="right" v-model="item.is_work_status" :options="options"></mt-radio>
+                        <p class="title">6、一次侧供回水温度远程可测<span>*</span></p>
+                        <mt-radio align="right" v-model="item.is_water_in_temp" :options="options"></mt-radio>
+                        <p class="title">7、二次侧供回水温度远程可测<span>*</span></p>
+                        <mt-radio align="right" v-model="item.is_water_in_temp2" :options="options"></mt-radio>
+                    </div>
+                    <div class="machine-img">
+                        <i class="iconI" v-show="!item.imgName">
+                            <svg class="icon" aria-hidden="true">
+                                <use xlink:href="#icon-tianjia"></use>
+                            </svg>
+                        </i>
+                        <img :src="item.imgName" v-show="item.imgName" alt="设备图片">
+                        <input type="file" accept="image/*" capture="camera" @change="changeImage($event,item)">
+                    </div>
+                </div>
+            </div>
+            <mt-button type="primary" @click.native="bhMachineClick">确认</mt-button>
+        </div>
+        <!-- VRV多联机 -->
+        <div v-if="VRV.show" class="common coolMachine">
+            <header>
+                <i class="iconI back" @click="VRV.show=false;crew.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>VRV多联机</h1>
+                <i class="iconI add" @click="addMachine(VRV)">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-tianjia"></use>
+                    </svg>
+                </i>
+            </header>
+            <div class="machine" v-for="(item,index) in VRV.data">
+                <div v-show="VRV.state != index">
+                    <h2 @click="showMachine(index,VRV,true)">VRV多联机设备信息</h2>
+                </div>
+                <div v-show="VRV.state == index" >
+                    <h2 @click="showMachine(index,VRV,false)">VRV多联机设备信息</h2>
+                    <div class="summary">
+                        <h3>设备信息</h3>
+                        <mt-field label="品牌：" placeholder="大金" v-model="item.machine_brand"></mt-field>
+                        <p class="title picker" @click="openPicker(index)">安装日期<i class="iconI ">
+                                <svg v-if="!item.machine_install" class="icon" aria-hidden="true">
+                                    <use xlink:href="#icon-youjiantou"></use>
+                                </svg>
+                                <span class="vrv" v-text="item.machine_install"></span>
+                            </i></p>
+                        <mt-datetime-picker
+                        ref="picker"
+                        type="date"
+                        year-format="{value} 年"
+                        month-format="{value} 月"
+                        date-format="{value} 日"
+                         @confirm="handleConfirm">
+                        </mt-datetime-picker>
+                        <mt-field label="室外机数量：" class="required" placeholder="5" type="number" v-model.number="item.machine_outMachineCount"></mt-field>
+                        <mt-field label="室外机单台功率：" class="required" placeholder="24" type="number" v-model.number="item.machine_outMachinePower"></mt-field>
+                        <mt-field label="室外机单台额定制冷量：" placeholder="72" type="number" v-model.number="item.machine_outMachineCool"></mt-field>
+                        <mt-field label="室内机数量：" placeholder="12" type="number" v-model.number="item.machine_inMachineCount"></mt-field>
+                        <mt-field label="室内机单台功率：" placeholder="0.5" type="number" v-model.number="item.machine_inMachinePower"></mt-field>
+                        <mt-field label="负荷面积：" class="required" placeholder="1500" type="number" v-model.number="item.machine_MachineArea"></mt-field>
+                        <p class="title">室内机是否有安装集中控制系统</p>
+                        <mt-radio align="right" v-model="item.is_machine_control" :options="options"></mt-radio>
+                    </div>
+                    <div class="machine-img">
+                        <i class="iconI" v-show="!item.imgName">
+                            <svg class="icon" aria-hidden="true">
+                                <use xlink:href="#icon-tianjia"></use>
+                            </svg>
+                        </i>
+                        <img :src="item.imgName" v-show="item.imgName" alt="设备图片">
+                        <input type="file" accept="image/*" capture="camera" @change="changeImage($event,item)">
+                    </div>
+                </div>
+            </div>
+            <mt-button type="primary" @click.native="VRVClick">确认</mt-button>
+        </div>
+    </div>
+    <script src="//at.alicdn.com/t/font_586806_xq1cxdgeeglul3di.js"></script>
+    <script src="assets/vue.js"></script>
+    <script src="assets/mintUI.js"></script>
+    <script src="assets/axios.min.js"></script>
+    <script>
+        document.write("<script src='js/index.js?time="+new Date().getTime()+"'><\/script>");
+    </script>
+    <script src="https://cdn.bootcss.com/babel-polyfill/6.23.0/polyfill.min.js"></script>
+</body>
+</html>

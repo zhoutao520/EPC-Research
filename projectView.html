@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="keywords" content="IE=edge">
+    <title>伊塔系统前期调研表</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script src="js/changeFontSize.js"></script>
+    <link rel="stylesheet" type="text/css" media="screen" href="assets/mintUI.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="css/index.css" />
+</head>
+<body>
+    <div id="app">
+        <div id="load" class="load"><img src="img/load.gif" alt="加载中"></div>
+        <!-- 首页 -->
+        <div class="common">
+            <header>
+                <h1>项目列表</h1>
+                <i class="iconI add" @click="exit()">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-dengchu"></use>
+                    </svg>
+                </i>
+            </header>
+            <ul v-infinite-scroll="loadMore" :infinite-scroll-disabled="loading" :infinite-scroll-distance="10">
+                <li v-for="(item,index) in index.data">
+                    <div @click="indexClick(item)" class="projectInfo">
+                        <p>项目名称：{{item.pro_name}}</p>
+                        <p>录入时间：{{item.createTime}}</p>
+                        <i class="iconI index-right">
+                            <svg class="icon" aria-hidden="true">
+                                <use xlink:href="#icon-youjiantou"></use>
+                            </svg>
+                        </i>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <script src="//at.alicdn.com/t/font_586806_xq1cxdgeeglul3di.js"></script>
+    <script src="https://cdn.bootcss.com/babel-polyfill/6.23.0/polyfill.min.js"></script>
+    <script src="assets/vue.js"></script>
+    <script src="assets/mintUI.js"></script>
+    <script src="assets/axios.min.js"></script>
+    <script>
+        document.write("<script src='js/projectView.js?time="+new Date().getTime()+"'><\/script>");
+    </script>
+</body>
+</html>

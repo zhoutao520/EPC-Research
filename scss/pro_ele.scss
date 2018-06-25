@@ -1,0 +1,49 @@
+@function pxToRem($px) {
+    @return $px / 23.4375 * 1rem;
+  }
+  .left-arrow{
+    position: absolute;
+    width: pxToRem(30);
+    top: pxToRem(10);
+    left: pxToRem(10);
+  }
+  .submit{
+    width: 90%;
+    height: pxToRem(45);
+    margin-left: 5%;
+    background: #1aad19;
+    border-radius: 3px;
+    border: 0;
+    outline: none;
+    color: #fff;
+    font-size: pxToRem(18);
+  }
+  .ele{
+      background: #ddd;
+      margin: pxToRem(10);
+      border-radius: 3px;
+      font-size: pxToRem(18);
+      li{
+        line-height: pxToRem(50);
+        overflow: hidden;
+        span{
+            display: inline-block;
+            width: 40%;
+            margin: 0 pxToRem(10);
+            float: left;
+        }
+        input{
+            float: left;
+            margin-top: pxToRem(7);
+            font-size: pxToRem(18);
+            width: 45%;
+            border: 1px solid #ccc;
+            outline: none;
+            border-radius: 3px;
+            padding: pxToRem(4);
+            &:hover{
+                border-color: #1aad19;
+            }
+        }
+      }
+  }

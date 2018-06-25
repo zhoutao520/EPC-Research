@@ -1,0 +1,38 @@
+@function pxToRem($px) {
+    @return $px / 23.4375 * 1rem;
+  }
+.projectInfo{
+    position: relative;
+    background: rgba(136,95,95,0.1);
+    width: 90%;
+    margin-left: 2%;
+    margin-top: 5%;
+    margin-bottom: 5%;
+    border-radius: 5px;
+    padding: 0 pxToRem(10);
+    line-height: pxToRem(50);
+    font-size: pxToRem(18);
+    .rightArrow{
+        position: absolute;
+        top: pxToRem(15);
+        right: pxToRem(20);
+        width: pxToRem(20);
+    }
+  }
+  .submit{
+    width: 90%;
+    height: pxToRem(45);
+    margin-left: 5%;
+    background: #1aad19;
+    border-radius: 3px;
+    border: 0;
+    outline: none;
+    color: #fff;
+    font-size: pxToRem(18);
+  }
+  .left-arrow{
+    position: absolute;
+    width: pxToRem(30);
+    top: pxToRem(10);
+    left: pxToRem(10);
+  }

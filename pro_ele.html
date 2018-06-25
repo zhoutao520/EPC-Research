@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="keywords" content="IE=edge">
+		<title>基本数据</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		<script src="js/config.js"></script>
+		<link rel="stylesheet" media="screen" href="css/base.css" />
+		<link rel="stylesheet" media="screen" href="css/pro_ele.css" />
+	</head>
+	<body>
+		<div id="load" class="load"><img src="img/load.gif" alt="加载中"></div>
+		<header>
+			<img onclick="history.go(-1);" class="left-arrow" src="img/leftArrow.png" alt="返回箭头">
+			<h1>计算统计</h1>
+		</header>
+		<div id="box">
+				<ul class="ele">
+					<li><span>基本电价：</span><input class="a a0" value="1"/></li>
+					<li><span>尖时电费倍率：</span><input class="a a1" value="1"/></li>
+					<li><span>峰时电费倍率：</span><input class="a a2" value="1"/></li>
+					<li><span>平时电费倍率：</span><input class="a a3" value="1"/></li>
+					<li><span>谷时电费倍率：</span><input class="a a4" value="1"/></li>
+					<li><span>尖运行时间：</span><input class="a a5" value="1"/></li>
+					<li><span>峰运行时间：</span><input class="a a6" value="1"/></li>
+					<li><span>平运行时间：</span><input class="a a7" value="1"/></li>
+					<li><span>谷运行时间：</span><input class="a a8" value="1"/></li>
+				</ul>
+				<button class="submit" id="submit">提交并进入下一步</button>
+			</div>
+		</div>
+		<script src="js/jquery.js"></script>
+		<script src="js/ele_pro.js"></script>
+	</body>
+</html>

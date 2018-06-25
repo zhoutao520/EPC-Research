@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="keywords" content="IE=edge">
+    <title>伊塔系统前期调研表</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script src="js/changeFontSize.js"></script>
+    <link rel="stylesheet" type="text/css" media="screen" href="assets/mintUI.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="css/index.css" />
+</head>
+<body>
+    <div id="app">
+        <div id="load" class="load"><img src="img/load.gif" alt="加载中"></div>
+        <!-- 设备信息 -->
+        <div v-if="projectInfo.show" class="common">
+            <header>
+                <i v-if="emailF" @click="history.go(-1);" class="iconI back" >
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>设备信息</h1>
+            </header>
+            <div class="projectInfo" @click="getBasic">
+                基本信息
+                <i class="iconI ">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-youjiantou"></use>
+                    </svg>
+                </i>
+            </div>
+            <div @click="projectInfoClick(item,projectInfo.options.name[index])" class="projectInfo" v-for="(item,index) in projectInfo.options.id">{{projectInfo.options.name[index]}}
+                <i class="iconI ">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-youjiantou"></use>
+                    </svg>
+                </i>
+            </div>
+        </div>
+        <!-- 机组信息 -->
+        <div v-if="crew.show" class="common">
+            <header>
+                <i @click="crewBack()" class="iconI back" >
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1 v-text="crew.title"></h1>
+            </header>
+            <div class="projectInfo" v-for="(item,index) in crew.options">{{item}}
+                <i @click="crewClick(item,crew.status[index])" class="iconI ">
+                    {{crew.status[index]}}
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-youjiantou"></use>
+                    </svg>
+                </i>
+            </div>
+        </div>
+        <!-- 基本信息 -->
+        <div v-if="basic.show" class="common">
+            <header>
+                <i class="iconI back" @click="basic.show=false;projectInfo.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>基本信息</h1>
+            </header>
+            <div class="summary">
+                <h3>项目概况</h3>
+                <mt-cell :title="'项目名称是'+basic.data.pro_name"></mt-cell>
+                <mt-cell :title="'项目用途是'+basic.data.pro_used"></mt-cell>
+                <mt-cell :title="'层数是'+basic.data.pro_floor+'层'"></mt-cell>
+                <mt-cell :title="'建筑面积是'+basic.data.pro_cover+'m²'"></mt-cell>
+                <mt-cell :title="'项目所在地为'+basic.data.pro_place"></mt-cell>
+                <mt-cell :title="'建成时间为'+basic.data.pro_createTime"></mt-cell>
+            </div>
+            <div class="segmenting"></div>
+            <div class="summary">
+                <h3>能耗费用</h3>
+                <mt-cell :title="'建筑物一年能耗费用(照明系统、电梯、中央空凋能耗)是'+basic.data.pro_cost"></mt-cell>
+                <mt-cell :title="'制冷费用(冷冻机、冷冻泵、冷却泵、冷却塔)是'+basic.data.pro_cool"></mt-cell>
+                <mt-cell :title="'制热费用(用于锅炉的燃气、热水泵等)是'+basic.data.pro_hot"></mt-cell>
+                <mt-cell :title="'末端费用(空调箱、风机盘管的电费)是'+basic.data.pro_end"></mt-cell>
+                <mt-cell :title="'租户收费计算方式为'+basic.data.pro_rentCost"></mt-cell>
+            </div>
+            <div class="segmenting"></div>
+            <div class="summary">
+                <h3>能源价格</h3>
+                <mt-cell :title="'电费单价是'+basic.data.pro_electric_money"></mt-cell>
+                <mt-cell :title="basic.data.pro_electric_change?'是变电价':'不是变电价'"></mt-cell>
+                <mt-cell :title="'天然气单价是'+basic.data.pro_gas_money"></mt-cell>
+            </div>
+            <div class="segmenting"></div>
+            <div class="summary">
+                <h3>运营状况</h3>
+                <mt-cell :title="'设施管理单位是'+basic.data.pro_manage"></mt-cell>
+                <mt-cell :title="basic.data.pro_outsource?'能源系统是外包的':'能源系统是不是外包的'"></mt-cell>
+                <mt-cell :title="'能源托管承保公司是'+basic.data.pro_company"></mt-cell>
+                <mt-cell :title="'现场空调系统运营人数为'+basic.data.pro_pserson+'人'"></mt-cell>
+            </div>
+        </div>
+        <!-- 楼宇自控系统 -->
+        <div v-if="building.show" class="common">
+            <header>
+                <i class="iconI back" @click="building.show=false;crew.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>楼宇自控系统</h1>
+            </header>
+            <div class="summary">
+                <h3>系统概况</h3>
+                <mt-cell :title="'自控软件生产厂家是'+building.data.software_maker"></mt-cell>
+                <mt-cell :title="'自控软件型号是'+building.data.software_type"></mt-cell>
+                <mt-cell :title="'控制器生产厂家是'+building.data.control_maker"></mt-cell>
+                <mt-cell :title="'控制器型号是'+building.data.control_type"></mt-cell>
+            </div>
+            <div class="segmenting"></div>
+            <div class="summary crewV">
+                <h3>系统控制参数</h3>
+                <mt-cell :title="building.data.is_get_out_temp?'可获得室外温湿度参数':'不可获得室外温湿度参数'"></mt-cell>
+                <mt-cell :title="building.data.is_get_in_temp?'可获得建筑物内各部分的温度(或回风温度)':'不可获得建筑物内各部分的温度(或回风温度)'"></mt-cell>
+                <mt-cell :title="building.data.is_get_in_humidity?'可获得建筑物内各部分的湿度(或回风湿度)':'不可获得建筑物内各部分的湿度(或回风湿度)'"></mt-cell>
+                <mt-cell :title="'温湿度数据准确度为'+building.data.is_tempAndHumidity+'%'"></mt-cell>
+                <mt-cell :title="building.data.is_get_cool_status?'可获得制冷系统(冷机水泵等)的工作参数':'不可获得制冷系统(冷机水泵等)的工作参数'"></mt-cell>
+                <mt-cell :title="building.data.is_get_cool_control?'可对制冷系统(冷机水泵等)进行远程控制':'不可对制冷系统(冷机水泵等)进行远程控制'"></mt-cell>
+                <mt-cell :title="building.data.is_get_hot_status?'可获得采暖系统(锅炉、水泵等)的工作参数':'不可获得采暖系统(锅炉、水泵等)的工作参数'"></mt-cell>
+                <mt-cell :title="building.data.is_get_hot_control?'可对采暖系统(锅炉、水泵等)进行远程控制':'不可对采暖系统(锅炉、水泵等)进行远程控制'"></mt-cell>
+                <mt-cell :title="building.data.is_get_end_status?'可获得末端设备(AHU、FCU)的工作参数':'不可获得末端设备(AHU、FCU)的工作参数'"></mt-cell>
+                <mt-cell :title="building.data.is_get_end_control?'可对末端设备(AHU、FCU等)进行远程控制':'不可对末端设备(AHU、FCU等)进行远程控制'"></mt-cell>
+                <mt-cell :title="'使用自控系统运行的时间比例为'+building.data.auto_control_time+'%'"></mt-cell>
+            </div>
+        </div>
+        <!-- 末端系统 -->
+        <div v-if="endSystem.show" class="common">
+            <header>
+                <i class="iconI back" @click="endSystem.show=false;crew.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>末端系统</h1>
+            </header>
+            <div class="summary">
+                <h3>系统概况</h3>
+                <mt-cell title="自控软件生产厂家：" :value="building.data.software_maker"></mt-cell>
+                <mt-cell :title="endSystem.data.tube_type == '双管'?'双管制（冷热水共管）':'四管制（冷热水完全独立）'"></mt-cell>
+                <mt-cell :title="endSystem.data.pump_type+'泵系统'"></mt-cell>
+                <mt-cell :title="'空气处理单元AHU的类型为'+endSystem.data.ahu_type"></mt-cell>
+                <mt-cell :title="endSystem.data.is_buildingTempPoint?'建筑内有温度测点':'建筑内没有温度测点'"></mt-cell>
+                <mt-cell :title="'温度测点的密度是'+endSystem.data.buildingTempPointNum+'个/平米'"></mt-cell>
+                <mt-cell :title="'夏季室内温度的要求为'+endSystem.data.buildingTempPointNum+'℃'"></mt-cell>
+                <mt-cell :title="'夏季室内湿度的要求为'+endSystem.data.buildingTempPointNum+'%'"></mt-cell>
+                <mt-cell :title="'冬季室内温度的要求为'+endSystem.data.buildingTempPointNum+'℃'"></mt-cell>
+                <mt-cell :title="'冬季室内湿度的要求为'+endSystem.data.buildingTempPointNum+'%'"></mt-cell>
+            </div>
+            <div class="segmenting"></div>
+            <div class="summary">
+                <h3>系统控制参数</h3>
+                <mt-cell :title="endSystem.data.is_ahu_auto_control?'AHU由温控器自动控制':'AHU不由温控器自动控制'"></mt-cell>
+                <mt-cell :title="endSystem.data.is_ahu_electric_valve?'AHU带有可用的电动阀门':'AHU没有可用的电动阀门'"></mt-cell>
+                <mt-cell :title="endSystem.data.is_computer_control?'为计算机房供冷':'不为计算机房供冷'"></mt-cell>
+                <mt-cell :title="endSystem.data.is_indoor_auto_control?'室内温度为自动控制':'室内温度不为自动控制'"></mt-cell>
+                <mt-cell :title="'末端巡检频率为'+endSystem.data.end_check_frequency"></mt-cell>
+            </div>
+        </div>
+        <!-- 末端设备 -->
+        <div v-if="endMachine.show" class="common">
+            <header>
+                <i class="iconI back" @click="endMachine.show=false;crew.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>末端设备</h1>
+            </header>
+            <div class="machine" v-for="(item,index) in endMachine.data">
+                <div v-show="endMachine.state != index">
+                    <h2 @click="showMachine(index,endMachine,true)">末端设备信息</h2>
+                </div>
+                <div v-show="endMachine.state == index" >
+                    <h2 @click="showMachine(index,endMachine,false)">末端设备信息</h2>
+                    <div class="summary">
+                        <h3>设备信息</h3>
+                        <mt-cell :title="'类型为'+item.end_type"></mt-cell>
+                        <mt-cell :title="'品牌为'+item.end_brand"></mt-cell>
+                        <mt-cell :title="'型号为'+item.end_model"></mt-cell>
+                        <mt-cell :title="'数量为'+item.end_num"></mt-cell>
+                        <mt-cell :title="'电功率为'+item.end_power+'kW'"></mt-cell>
+                        <mt-cell :title="'送风量为'+item.send_wind+'m³/h'"></mt-cell>
+                        <mt-cell :title="'制冷量为'+item.end_cool+'kW'"></mt-cell>
+                        <mt-cell :title="'加湿功率为'+item.end_humidity_power+'kW'"></mt-cell>
+                    </div>
+                    <div class="segmenting"></div>
+                    <div class="summary">
+                        <h3>设备控制参数</h3>
+                        <mt-cell :title="building.data.is_change_start?'有变频启动':'没有变频启动'"></mt-cell>
+                        <mt-cell :title="building.data.is_long_control?'有远程控制':'没有远程控制'"></mt-cell>
+                        <mt-cell :title="building.data.is_new_air?'有新风引入':'没有新风引入'"></mt-cell>
+                        <mt-cell :title="'新风比例为'+item.new_air_percent+'%'"></mt-cell>
+                    </div>
+                    <div class="machine-img">
+                        <img :src="item.imgName" alt="设备图片">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 制冷系统 -->
+        <div v-if="coolMethod.show" class="common">
+            <header>
+                <i class="iconI back" @click="coolMethod.show=false;crew.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>制冷系统</h1>
+            </header>
+            <div class="summary">
+                <h3>负荷水平</h3>
+                <mt-cell :title="'制冷月份为'+coolMethod.data.cool_month"></mt-cell>
+                <mt-cell :title="'制冷系统工作时间为'+coolMethod.data.cool_workTime"></mt-cell>
+                <mt-cell :title="'低负荷或过渡季节开启的冷机台数为'+coolMethod.data.cool_open_low"></mt-cell>
+                <mt-cell :title="'高负荷时段开启的冷机台数为'+coolMethod.data.cool_open_high"></mt-cell>
+                <mt-cell :title="'冷机启停策略：'+coolMethod.data.cool_machine_start_menthod"></mt-cell>
+            </div>
+            <div class="segmenting"></div>
+            <div class="summary">
+                <h3>冷冻水</h3>
+                <mt-cell :title="'低负荷或过渡季节供水温度设定值为'+coolMethod.data.ldWater_low_in_set+'℃'"></mt-cell>
+                <mt-cell :title="'低负荷或过渡季节供水温度实际值为'+coolMethod.data.ldWater_low_in_actual+'℃'"></mt-cell>
+                <mt-cell :title="'低负荷或过渡季节回水温度实际值为'+coolMethod.data.ldWater_low_return_actual+'℃'"></mt-cell>
+                <mt-cell :title="'高负荷时段供水温度设定值为'+coolMethod.data.ldWater_high_in_set+'℃'"></mt-cell>
+                <mt-cell :title="'高负荷时段供水温度实际值为'+coolMethod.data.ldWater_high_in_actual+'℃'"></mt-cell>
+                <mt-cell :title="'高负荷时段回水温度实际值为'+coolMethod.data.ldWater_high_return_actual+'℃'"></mt-cell>
+            </div>
+            <div class="segmenting"></div>
+            <div class="summary cool">
+                <h3>冷却水</h3>
+                <mt-cell :title="'低负荷或过渡季节要求的回水温度范围为'+coolMethod.data.lqWater_low_range+'℃'"></mt-cell>
+                <mt-cell :title="'低负荷或过渡季节实际的回水温度范围为'+coolMethod.data.lqWater_low_actual+'℃'"></mt-cell>
+                <mt-cell :title="'高负荷时段要求的回水温度范围为'+coolMethod.data.lqWater_high_range+'℃'"></mt-cell>
+                <mt-cell :title="'高负荷时段实际的回水温度范围为'+coolMethod.data.lqWater_high_actual+'℃'"></mt-cell>
+            </div>
+        </div>
+        <!-- 冷机 -->
+        <div v-if="coolMachine.show" class="common coolMachine">
+            <header>
+                <i class="iconI back" @click="coolMachine.show=false;crew.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>冷机</h1>
+            </header>
+            <div class="machine" v-for="(item,index) in coolMachine.data">
+                <div v-show="coolMachine.state != index">
+                    <h2 @click="showMachine(index,coolMachine,true)">冷机设备信息</h2>
+                </div>
+                <div v-show="coolMachine.state == index" >
+                    <h2 @click="showMachine(index,coolMachine,false)">冷机设备信息</h2>
+                    <div class="summary">
+                        <h3>设备信息</h3>
+                        <mt-cell :title="'主机类型为'+item.machine_type"></mt-cell>
+                        <mt-cell :title="'制冷剂类型为'+item.machine_model"></mt-cell>
+                        <mt-cell :title="'厂家是'+item.machine_vender"></mt-cell>
+                        <mt-cell :title="'数量为'+item.machine_count"></mt-cell>
+                        <mt-cell :title="'单台额定功率为'+item.machine_perPower+'KW'"></mt-cell>
+                        <mt-cell :title="'单台制冷量为'+item.machine_perCool+item.unit"></mt-cell>
+                        <mt-cell :title="'低负荷或过渡季节冷冻水出水温度为'+item.machine_ld_outWaterTempLow+'℃'"></mt-cell>
+                        <mt-cell :title="'高负荷时段冷冻水出水温度为'+item.machine_ld_outWaterTempHigh+'℃'"></mt-cell>
+                        <mt-cell :title="'通讯卡供楼宇自动化系统读/写冷机的内部设定：'+item.machine_card"></mt-cell>
+                    </div>
+                    <div class="segmenting"></div>
+                    <div class="summary">
+                        <h3>设备控制参数</h3>
+                        <mt-cell :title="item.is_has_hand_valve?'冷冻水和冷却水管上安装了手动阀门':'冷冻水和冷却水管上没有安装手动阀门'"></mt-cell>
+                        <mt-cell :title="item.is_hand_valve_used?'手动阀门可用':'手动阀门不可用'"></mt-cell>
+                        <mt-cell :title="item.is_has_auto_valve?'冷冻水和冷却水管上安装了电动阀门':'冷冻水和冷却水管上没安装电动阀门'"></mt-cell>
+                        <mt-cell :title="item.is_auto_valve_used?'自动阀门可用':'自动阀门不可用'"></mt-cell>
+                        <mt-cell :title="'冷机控制依据是'+item.machine_control"></mt-cell>
+                    </div>
+                    <div class="machine-img">
+                        <img :src="item.imgName" alt="设备图片">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 风冷热泵 -->
+        <div v-if="windCoolMachine.show" class="common coolMachine">
+            <header>
+                <i class="iconI back" @click="windCoolMachine.show=false;crew.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>风冷热泵</h1>
+            </header>
+            <div class="machine" v-for="(item,index) in windCoolMachine.data">
+                <div v-show="windCoolMachine.state != index">
+                    <h2 @click="showMachine(index,windCoolMachine,true)">风冷热泵设备信息</h2>
+                </div>
+                <div v-show="windCoolMachine.state == index" >
+                    <h2 @click="showMachine(index,windCoolMachine,false)">风冷热泵设备信息</h2>
+                    <div class="summary">
+                        <h3>设备信息</h3>
+                        <mt-cell :title="'主机类型为'+item.machine_type"></mt-cell>
+                        <mt-cell :title="'厂家是'+item.machine_vender"></mt-cell>
+                        <mt-cell :title="'数量为'+item.machine_count"></mt-cell>
+                        <mt-cell :title="'单台额定功率为'+item.machine_perPower+'KW'"></mt-cell>
+                        <mt-cell :title="'单台制冷量为'+item.machine_perCool+'kW'"></mt-cell>
+                        <mt-cell :title="'低负荷或过渡季节冷冻水出水温度为'+item.machine_ld_outWaterTempLow+'℃'"></mt-cell>
+                        <mt-cell :title="'高负荷时段冷冻水出水温度为'+item.machine_ld_outWaterTempHigh+'℃'"></mt-cell>
+                        <mt-cell :title="'通讯卡供楼宇自动化系统读/写冷机的内部设定：'+item.machine_card"></mt-cell>
+                    </div>
+                    <div class="segmenting"></div>
+                    <div class="summary">
+                        <h3>设备控制参数</h3>
+                        <mt-cell :title="item.is_has_hand_valve?'冷冻水和冷却水管上安装了手动阀门':'冷冻水和冷却水管上没有安装手动阀门'"></mt-cell>
+                        <mt-cell :title="item.is_hand_valve_used?'手动阀门可用':'手动阀门不可用'"></mt-cell>
+                        <mt-cell :title="item.is_has_auto_valve?'冷冻水和冷却水管上安装了电动阀门':'冷冻水和冷却水管上没安装电动阀门'"></mt-cell>
+                        <mt-cell :title="item.is_auto_valve_used?'自动阀门可用':'自动阀门不可用'"></mt-cell>
+                        <mt-cell :title="'冷机控制依据是'+item.machine_control"></mt-cell>
+                    </div>
+                    <div class="machine-img">
+                        <img :src="item.imgName" alt="设备图片">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 地源热泵 -->
+        <div v-if="earthCoolMachine.show" class="common coolMachine">
+            <header>
+                <i class="iconI back" @click="earthCoolMachine.show=false;crew.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>地源热泵</h1>
+            </header>
+            <div class="machine" v-for="(item,index) in earthCoolMachine.data">
+                <div v-show="earthCoolMachine.state != index">
+                    <h2 @click="showMachine(index,earthCoolMachine,true)">地源热泵设备信息</h2>
+                </div>
+                <div v-show="earthCoolMachine.state == index" >
+                    <h2 @click="showMachine(index,earthCoolMachine,false)">地源热泵设备信息</h2>
+                    <div class="summary">
+                        <h3>设备信息</h3>
+                        <mt-cell :title="'主机类型为'+item.machine_type"></mt-cell>
+                        <mt-cell :title="'厂家是'+item.machine_vender"></mt-cell>
+                        <mt-cell :title="'数量为'+item.machine_count"></mt-cell>
+                        <mt-cell :title="'单台额定功率为'+item.machine_perPower+'KW'"></mt-cell>
+                        <mt-cell :title="'单台制冷量为'+item.machine_perCool+item.unit"></mt-cell>
+                        <mt-cell :title="'低负荷或过渡季节冷冻水出水温度为'+item.machine_ld_outWaterTempLow+'℃'"></mt-cell>
+                        <mt-cell :title="'高负荷时段冷冻水出水温度为'+item.machine_ld_outWaterTempHigh+'℃'"></mt-cell>
+                        <mt-cell :title="'低负荷或过渡季节热水出水温度为'+item.machine_hot_outWaterTempLow+'℃'"></mt-cell>
+                        <mt-cell :title="'高负荷时段热水出水温度为'+item.machine_hot_outWaterTempHigh+'℃'"></mt-cell>
+                        <mt-cell :title="'通讯卡供楼宇自动化系统读/写冷机的内部设定：'+item.machine_card"></mt-cell>
+                    </div>
+                    <div class="segmenting"></div>
+                    <div class="summary">
+                        <h3>设备控制参数</h3>
+                        <mt-cell :title="item.is_has_hand_valve?'冷冻水和冷却水管上安装了手动阀门':'冷冻水和冷却水管上没有安装手动阀门'"></mt-cell>
+                        <mt-cell :title="item.is_hand_valve_used?'手动阀门可用':'手动阀门不可用'"></mt-cell>
+                        <mt-cell :title="item.is_has_auto_valve?'冷冻水和冷却水管上安装了电动阀门':'冷冻水和冷却水管上没安装电动阀门'"></mt-cell>
+                        <mt-cell :title="item.is_auto_valve_used?'自动阀门可用':'自动阀门不可用'"></mt-cell>
+                        <mt-cell :title="'地源热泵控制依据是'+item.machine_control"></mt-cell>
+                    </div>
+                    <div class="machine-img">
+                        <img :src="item.imgName" alt="设备图片">
+                    </div>
+                </div>
+            </div>
+            <mt-button type="primary" @click.native="earthCoolMachineClick">确认</mt-button>
+        </div>
+        <!-- 循环水泵 -->
+        <div v-if="loopPump.show" class="common coolMachine">
+            <header>
+                <i class="iconI back" @click="loopPump.show=false;crew.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>循环水泵</h1>
+            </header>
+            <div class="machine" v-for="(item,index) in loopPump.data">
+                <div v-show="loopPump.state != index">
+                    <h2 @click="showMachine(index,loopPump,true)">循环水泵设备信息</h2>
+                </div>
+                <div v-show="loopPump.state == index" >
+                    <h2 @click="showMachine(index,loopPump,false)">循环水泵设备信息</h2>
+                    <div class="summary">
+                        <h3>设备信息</h3>
+                        <mt-cell :title="'用途是'+item.machine_used"></mt-cell>
+                        <mt-cell :title="'数量为'+item.machine_count"></mt-cell>
+                        <mt-cell :title="'单台额定功率为'+item.machine_power+'KW'"></mt-cell>
+                        <mt-cell :title="'单台额定流量为'+item.machine_flow+'m³/h'"></mt-cell>
+                        <mt-cell :title="'扬程'+item.machine_lift+'m'"></mt-cell>
+                        <mt-cell :title="'低负荷或过渡季节水泵开启'+item.machine_start_low+'台'"></mt-cell>
+                        <mt-cell :title="'高负荷时段水泵开启'+item.machine_start_high+'台'"></mt-cell>
+                    </div>
+                    <div class="segmenting"></div>
+                    <div class="summary">
+                        <h3>设备控制参数</h3>
+                        <mt-cell :title="'启动方式是'+item.machine_start_way"></mt-cell>
+                        <mt-cell :title="item.is_get_work_status?'可远程获得工作状态':'不可远程获得工作状态'"></mt-cell>
+                        <mt-cell :title="item.is_work_status?'可进行远程操作':'不可进行远程操作'"></mt-cell>
+                    </div>
+                    <div class="machine-img">
+                        <img :src="item.imgName" alt="设备图片">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 冷却塔 -->
+        <div v-if="tower.show" class="common coolMachine">
+            <header>
+                <i class="iconI back" @click="tower.show=false;crew.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>冷却塔</h1>
+            </header>
+            <div class="machine" v-for="(item,index) in tower.data">
+                <div v-show="tower.state != index">
+                    <h2 @click="showMachine(index,tower,true)">冷却塔设备信息</h2>
+                </div>
+                <div v-show="tower.state == index" >
+                    <h2 @click="showMachine(index,tower,false)">冷却塔设备信息</h2>
+                    <div class="summary">
+                        <h3>设备信息</h3>
+                        <mt-cell :title="'类型是'+item.machine_used"></mt-cell>
+                        <mt-cell :title="'数量为'+item.machine_count"></mt-cell>
+                        <mt-cell :title="'风机功率为'+item.machine_power+'KW'"></mt-cell>
+                        <mt-cell :title="'低负荷或过渡季节风机开启'+item.machine_start_low+'台'"></mt-cell>
+                        <mt-cell :title="'高负荷时段风机开启'+item.machine_start_high+'台'"></mt-cell>
+                        <mt-cell :title="'内循环水泵（闭式冷却塔）功率为'+item.machine_pump_power+'kW'"></mt-cell>
+                        <mt-cell :title="'内循环水泵（闭式冷却塔）有'+item.machine_pump_count+'台'"></mt-cell>
+                    </div>
+                    <div class="segmenting"></div>
+                    <div class="summary">
+                        <h3>设备控制参数</h3>
+                        <mt-cell :title="item.is_change_windHz?'风机是变频的':'风机不是变频的'"></mt-cell>
+                        <mt-cell :title="item.is_change_pumpHz?'内循环水泵（闭式冷却塔）是变频':'内循环水泵（闭式冷却塔）不是变频'"></mt-cell>
+                        <mt-cell :title="item.is_hand_status?'各台冷却塔安装了手动阀门':'各台冷却塔没安装手动阀门'"></mt-cell>
+                        <mt-cell :title="item.is_hand_status_used?'手动阀门可用':'手动阀门不可用'"></mt-cell>
+                        <mt-cell :title="item.is_auto_status?'各台冷却塔安装了电动阀门':'各台冷却塔没安装电动阀门'"></mt-cell>
+                        <mt-cell :title="item.is_auto_status_used?'自动阀门可用':'自动阀门不可用'"></mt-cell>
+                        <mt-cell :title="item.is_get_work_status?'冷却塔可远程获得工作参数':'冷却塔不可远程获得工作参数'"></mt-cell>
+                        <mt-cell :title="item.is_work_status?'冷却塔可进行远程操作':'冷却塔不可进行远程操作'"></mt-cell>
+                    </div>
+                    <div class="machine-img">
+                        <img :src="item.imgName" alt="设备图片">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 蓄冰系统 -->
+        <div v-if="ice.show" class="common coolMachine">
+            <header>
+                <i class="iconI back" @click="ice.show=false;crew.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>蓄冰系统</h1>
+            </header>
+            <div class="summary">
+                <h3>设备信息</h3>
+                <p class="title first">水蓄冷还是冰蓄冷<span>*</span></p>
+                <mt-radio align="right" v-model="ice.data.machine_type" :options="['水蓄冷','冰蓄冷']"></mt-radio>
+                <mt-field label="容量(T)：" class="required" placeholder="15" type="number" v-model.number="ice.data.machine_capacity"></mt-field>
+                <p class="title">控制策略<span>*</span></p>
+                <textarea class="ice"></textarea>
+            </div>
+            <mt-button type="primary" @click.native="iceClick">确认</mt-button>
+            <mt-actionsheet :actions="tower.actions" v-model="tower.sheetVisible"></mt-actionsheet>
+        </div>
+        <!-- 供热系统 -->
+        <div v-if="hotMethod.show" class="common">
+            <header>
+                <i class="iconI back" @click="hotMethod.show=false;crew.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>供热系统</h1>
+            </header>
+            <div class="summary">
+                <h3>负荷水平</h3>
+                <mt-cell :title="'供热月份为'+hotMethod.data.hot_month"></mt-cell>
+                <mt-cell :title="'供热系统工作时间为'+hotMethod.data.hot_workTime"></mt-cell>
+                <mt-cell :title="'低负荷或过渡季节开启的锅炉台数为'+hotMethod.data.cool_open_low"></mt-cell>
+                <mt-cell :title="'高负荷时段开启的锅炉台数为'+hotMethod.data.cool_open_high"></mt-cell>
+                <mt-cell :title="'锅炉启停策略：'+hotMethod.data.cool_machine_start_menthod"></mt-cell>
+            </div>
+            <div class="segmenting"></div>
+            <div class="summary">
+                <h3>采暖热水温度</h3>
+                <mt-cell :title="'低负荷或过渡季节供水温度设定值为'+hotMethod.data.ldWater_low_in_set+'℃'"></mt-cell>
+                <mt-cell :title="'低负荷或过渡季节供水温度实际值为'+hotMethod.data.ldWater_low_in_actual+'℃'"></mt-cell>
+                <mt-cell :title="'低负荷或过渡季节回水温度实际值为'+hotMethod.data.ldWater_low_return_actual+'℃'"></mt-cell>
+                <mt-cell :title="'高负荷时段供水温度设定值为'+hotMethod.data.ldWater_high_in_set+'℃'"></mt-cell>
+                <mt-cell :title="'高负荷时段供水温度实际值为'+hotMethod.data.ldWater_high_in_actual+'℃'"></mt-cell>
+                <mt-cell :title="'高负荷时段回水温度实际值为'+hotMethod.data.ldWater_high_return_actual+'℃'"></mt-cell>
+            </div>
+        </div>
+        <!-- 锅炉 -->
+        <div v-if="boilerMachine.show" class="common coolMachine">
+            <header>
+                <i class="iconI back" @click="boilerMachine.show=false;crew.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>锅炉</h1>
+            </header>
+            <div class="machine" v-for="(item,index) in boilerMachine.data">
+                <div v-show="boilerMachine.state != index">
+                    <h2 @click="showMachine(index,boilerMachine,true)">锅炉设备信息</h2>
+                </div>
+                <div v-show="boilerMachine.state == index" >
+                    <h2 @click="showMachine(index,boilerMachine,false)">锅炉设备信息</h2>
+                    <div class="summary">
+                        <h3>设备信息</h3>
+                        <mt-cell :title="'主机品牌为'+item.bolier_brand"></mt-cell>
+                        <mt-cell :title="'厂家是'+item.machine_vender"></mt-cell>
+                        <mt-cell :title="'型号为'+item.bolier_model"></mt-cell>
+                        <mt-cell :title="'数量为'+item.bolier_num+'台'"></mt-cell>
+                        <mt-cell :title="'供热功率为'+item.boiler_power+item.unit"></mt-cell>
+                        <mt-cell :title="'锅炉类型为'+item.boiler_type"></mt-cell>
+                        <mt-cell :title="'燃料种类为'+item.fuel_type"></mt-cell>
+                        <mt-cell :title="'燃料额定消耗量为'+item.fuel_used+'m3/h'"></mt-cell>
+                        <mt-cell :title="'低负荷或过渡季节热水出水温度为'+item.hot_water_out_low+'℃'"></mt-cell>
+                        <mt-cell :title="'高负荷时段热水出水温度为'+item.hot_water_out_high+'℃'"></mt-cell>
+                        <mt-cell :title="'锅炉控制依据是'+item.boiler_control"></mt-cell>
+                    </div>
+                    <div class="machine-img">
+                        <img :src="item.imgName" alt="设备图片">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 溴化锂机 -->
+        <div v-if="liMachine.show" class="common coolMachine">
+            <header>
+                <i class="iconI back" @click="liMachine.show=false;crew.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>溴化锂机组</h1>
+            </header>
+            <div class="machine" v-for="(item,index) in liMachine.data">
+                <div v-show="liMachine.state != index">
+                    <h2 @click="showMachine(index,liMachine,true)">溴化锂机设备信息</h2>
+                </div>
+                <div v-show="liMachine.state == index" >
+                    <h2 @click="showMachine(index,liMachine,false)">溴化锂机设备信息</h2>
+                    <div class="summary">
+                        <h3>设备信息</h3>
+                        <mt-cell :title="'主机品牌为'+item.li_brand"></mt-cell>
+                        <mt-cell :title="'型号为'+item.li_model"></mt-cell>
+                        <mt-cell :title="'数量为'+item.li_num+'台'"></mt-cell>
+                        <mt-cell :title="'供热功率为'+item.li_power+item.unit"></mt-cell>
+                        <mt-cell :title="'机组类型为'+item.li_type"></mt-cell>
+                        <mt-cell :title="item.machine_type+'机组'"></mt-cell>
+                        <mt-cell :title="'高温热源种类为'+item.high_hot"></mt-cell>
+                        <mt-cell :title="'低温热源种类为'+item.low_hot"></mt-cell>
+                        <mt-cell :title="'机组电功率为'+item.machine_power+'kW'"></mt-cell>
+                        <mt-cell :title="'燃气消耗量为'+item.gas_used+'m3/h'"></mt-cell>
+                        <mt-cell :title="'低负荷或过渡季节热水出水温度为'+item.hot_water_out_low+'℃'"></mt-cell>
+                        <mt-cell :title="'高负荷时段热水出水温度为'+item.hot_water_out_high+'℃'"></mt-cell>
+                        <mt-cell :title="'溴化锂机组控制依据是'+item.boiler_control"></mt-cell>
+                    </div>
+                    <div class="machine-img">
+                        <img :src="item.imgName" alt="设备图片">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 燃煤锅炉 -->
+        <div v-if="coalMachine.show" class="common coolMachine">
+            <header>
+                <i class="iconI back" @click="coalMachine.show=false;crew.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>燃煤锅炉</h1>
+            </header>
+            <div class="machine" v-for="(item,index) in coalMachine.data">
+                <div v-show="coalMachine.state != index">
+                    <h2 @click="showMachine(index,coalMachine,true)">燃煤锅炉设备信息</h2>
+                </div>
+                <div v-show="coalMachine.state == index" >
+                    <h2 @click="showMachine(index,coalMachine,false)">燃煤锅炉设备信息</h2>
+                    <div class="summary">
+                        <h3>设备信息</h3>
+                        <mt-cell :title="'主机品牌为'+item.bolier_brand"></mt-cell>
+                        <mt-cell :title="'型号为'+item.bolier_model"></mt-cell>
+                        <mt-cell :title="'数量为'+item.bolier_num+'台'"></mt-cell>
+                        <mt-cell :title="'安装功率为'+item.boiler_power+item.unit"></mt-cell>
+                        <mt-cell :title="'锅炉类型为'+item.boiler_type"></mt-cell>
+                        <mt-cell :title="'锅炉承压为'+item.boiler_press+'Mpa'"></mt-cell>
+                        <mt-cell :title="'设计锅炉效率为'+item.boiler_ratio+'%'"></mt-cell>
+                        <mt-cell :title="'设计燃煤耗量为'+item.boiler_coal+'kg/h'"></mt-cell>
+                        <mt-cell :title="'燃煤种类为'+item.fuel_type"></mt-cell>
+                        <mt-cell :title="'燃煤单价为'+item.money_coal+'元/kg'"></mt-cell>
+                        <mt-cell :title="'低负荷或过渡季节热水出水温度为'+item.hot_water_out_low+'℃'"></mt-cell>
+                        <mt-cell :title="'高负荷时段热水出水温度为'+item.hot_water_out_high+'℃'"></mt-cell>
+                        <mt-cell :title="'燃煤锅炉控制依据是'+item.boiler_control"></mt-cell>
+                    </div>
+                    <div class="machine-img">
+                        <img :src="item.imgName" alt="设备图片">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 市政供热 -->
+        <div v-if="govMachine.show" class="common coolMachine">
+            <header>
+                <i class="iconI back" @click="govMachine.show=false;crew.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>市政供热</h1>
+            </header>
+            <div class="machine" v-for="(item,index) in govMachine.data">
+                <div v-show="govMachine.state != index">
+                    <h2 @click="showMachine(index,govMachine,true)">市政供热设备信息</h2>
+                </div>
+                <div v-show="govMachine.state == index" >
+                    <h2 @click="showMachine(index,govMachine,false)">市政供热设备信息</h2>
+                    <div class="summary">
+                        <h3>设备信息</h3>
+                        <mt-cell :title="'热源类型为'+item.hot_type"></mt-cell>
+                        <mt-cell :title="'供应容量为'+item.hot_content+item.unit"></mt-cell>
+                        <mt-cell :title="'计量方式为'+item.hot_way"></mt-cell>
+                        <mt-cell :title="'计量单价为'+item.hot_moeny"></mt-cell>
+                        <mt-cell :title="'低负荷或过渡季节供应温度为'+item.hot_temp_out_low+'℃'"></mt-cell>
+                        <mt-cell :title="'高负荷时段供应温度为'+item.hot_temp_out_high+'℃'"></mt-cell>
+                        <mt-cell :title="'供应容量控制依据是'+item.hot_control"></mt-cell>
+                    </div>
+                    <div class="machine-img">
+                        <img :src="item.imgName" alt="设备图片">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 热力站供热 -->
+        <div v-if="stationMachine.show" class="common coolMachine">
+            <header>
+                <i class="iconI back" @click="stationMachine.show=false;crew.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>热力站供热</h1>
+            </header>
+            <div class="machine" v-for="(item,index) in stationMachine.data">
+                <div v-show="stationMachine.state != index">
+                    <h2 @click="showMachine(index,stationMachine,true)">热力站供热设备信息</h2>
+                </div>
+                <div v-show="stationMachine.state == index" >
+                    <h2 @click="showMachine(index,stationMachine,false)">热力站供热设备信息</h2>
+                    <div class="summary">
+                        <h3>设备信息</h3>
+                        <mt-cell :title="'热源类型为'+item.hot_type"></mt-cell>
+                        <mt-cell :title="'供应容量为'+item.hot_content+item.unit"></mt-cell>
+                        <mt-cell :title="'计量方式为'+item.hot_way"></mt-cell>
+                        <mt-cell :title="'计量单价为'+item.hot_moeny"></mt-cell>
+                        <mt-cell :title="'低负荷或过渡季节供应温度为'+item.hot_temp_out_low+'℃'"></mt-cell>
+                        <mt-cell :title="'高负荷时段供应温度为'+item.hot_temp_out_high+'℃'"></mt-cell>
+                        <mt-cell :title="'供应容量控制依据是'+item.hot_control"></mt-cell>
+                    </div>
+                    <div class="machine-img">
+                        <img :src="item.imgName" alt="设备图片">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 电锅炉 -->
+        <div v-if="eBoilerMachine.show" class="common coolMachine">
+            <header>
+                <i class="iconI back" @click="eBoilerMachine.show=false;crew.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>电锅炉</h1>
+            </header>
+            <div class="machine" v-for="(item,index) in eBoilerMachine.data">
+                <div v-show="eBoilerMachine.state != index">
+                    <h2 @click="showMachine(index,eBoilerMachine,true)">电锅炉设备信息</h2>
+                </div>
+                <div v-show="eBoilerMachine.state == index" >
+                    <h2 @click="showMachine(index,eBoilerMachine,false)">电锅炉设备信息</h2>
+                    <div class="summary">
+                        <h3>设备信息</h3>
+                        <mt-cell :title="'品牌为'+item.bolier_brand"></mt-cell>
+                        <mt-cell :title="'型号为'+item.bolier_model"></mt-cell>
+                        <mt-cell :title="'数量为'+item.hot_way"></mt-cell>
+                        <mt-cell :title="'供热功率为'+item.boiler_power+'MW'"></mt-cell>
+                        <mt-cell :title="'锅炉类型为'+item.boiler_type"></mt-cell>
+                        <mt-cell :title="'低负荷或过渡季节热水出水温度为'+item.hot_water_out_low+'℃'"></mt-cell>
+                        <mt-cell :title="'高负荷时段热水出水温度为'+item.hot_water_out_high+'℃'"></mt-cell>
+                        <mt-cell :title="'锅炉控制依据是'+item.boiler_control"></mt-cell>
+                    </div>
+                    <div class="machine-img">
+                        <img :src="item.imgName" alt="设备图片">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 换热器 -->
+        <div v-if="bhMachine.show" class="common coolMachine">
+            <header>
+                <i class="iconI back" @click="bhMachine.show=false;crew.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>换热器</h1>
+            </header>
+            <div class="machine" v-for="(item,index) in bhMachine.data">
+                <div v-show="bhMachine.state != index">
+                    <h2 @click="showMachine(index,bhMachine,true)">换热器设备信息</h2>
+                </div>
+                <div v-show="bhMachine.state == index" >
+                    <h2 @click="showMachine(index,bhMachine,false)">换热器设备信息</h2>
+                    <div class="summary">
+                        <h3>设备信息</h3>
+                        <mt-cell :title="'数量为'+item.bh_num+'台'"></mt-cell>
+                        <mt-cell :title="'换热器类型为'+item.bh_type"></mt-cell>
+                    </div>
+                    <div class="segmenting"></div>
+                    <div class="summary">
+                        <h3>设备控制参数</h3>
+                        <mt-cell :title="item.is_hand_status?'一次侧和二次侧水管上安装了手动阀门':'一次侧和二次侧水管上没安装手动阀门'"></mt-cell>
+                        <mt-cell :title="item.is_hand_used?'手动阀门可用':'手动阀门不可用'"></mt-cell>
+                        <mt-cell :title="item.is_auto_status?'一次侧和二次侧水管上安装了电动阀门':'一次侧和二次侧水管上没安装电动阀门'"></mt-cell>
+                        <mt-cell :title="item.is_auto_used?'电动阀门可用':'电动阀门不可用'"></mt-cell>
+                        <mt-cell :title="item.is_work_status?'阀门远程可控':'阀门远程不可控'"></mt-cell>
+                        <mt-cell :title="item.is_water_in_temp?'一次侧供回水温度远程可测':'一次侧供回水温度远程不可测'"></mt-cell>
+                        <mt-cell :title="item.is_water_in_temp2?'二次侧供回水温度远程可测':'二次侧供回水温度远程不可测'"></mt-cell>
+                    </div>
+                    <div class="machine-img">
+                        <img :src="item.imgName" alt="设备图片">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- VRV多联机 -->
+        <div v-if="VRV.show" class="common coolMachine">
+            <header>
+                <i class="iconI back" @click="VRV.show=false;crew.show=true">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-back"></use>
+                    </svg>
+                </i>
+                <h1>VRV多联机</h1>
+            </header>
+            <div class="machine" v-for="(item,index) in VRV.data">
+                <div v-show="VRV.state != index">
+                    <h2 @click="showMachine(index,VRV,true)">VRV多联机设备信息</h2>
+                </div>
+                <div v-show="VRV.state == index" >
+                    <h2 @click="showMachine(index,VRV,false)">VRV多联机设备信息</h2>
+                    <div class="summary">
+                        <h3>设备信息</h3>
+                        <mt-cell :title="'品牌为'+item.machine_brand"></mt-cell>
+                        <mt-cell :title="'安装日期是'+item.machine_install"></mt-cell>
+                        <mt-cell :title="'室外机数量为'+item.machine_outMachineCount+'台'"></mt-cell>
+                        <mt-cell :title="'室外机单台功率为'+item.machine_outMachinePower+'kW'"></mt-cell>
+                        <mt-cell :title="'室外机单台额定制冷量为'+item.machine_outMachineCool+'kW'"></mt-cell>
+                        <mt-cell :title="'室内机数量为'+item.machine_inMachineCount+'台'"></mt-cell>
+                        <mt-cell :title="'室内机单台功率为'+item.machine_inMachinePower+'kW'"></mt-cell>
+                        <mt-cell :title="'负荷面积为'+item.machine_MachineArea"></mt-cell>
+                        <mt-cell :title="item.is_machine_control?'室内机安装了集中控制系统':'室内机没有安装集中控制系统'"></mt-cell>
+                    </div>
+                    <div class="machine-img">
+                        <img :src="item.imgName"alt="设备图片">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="//at.alicdn.com/t/font_586806_xq1cxdgeeglul3di.js"></script>
+    <script src="https://cdn.bootcss.com/babel-polyfill/6.23.0/polyfill.min.js"></script>
+    <script src="assets/vue.js"></script>
+    <script src="assets/mintUI.js"></script>
+    <script src="assets/axios.min.js"></script>
+    <script>
+        document.write("<script src='js/crewView.js?time="+new Date().getTime()+"'><\/script>");
+    </script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+@function pxToRem($px) {
+    @return $px / 23.4375 * 1rem;
+  }
+#select_div{
+    li{
+        width: 90%;
+        margin-left: 5%;
+        text-align: center;
+        margin-top: 60%;
+        margin-bottom: 60%;
+    }
+}
+.submit{
+    width: 90%;
+    height: pxToRem(45);
+    margin-left: 5%;
+    background: #1aad19;
+    border-radius: 3px;
+    border: 0;
+    outline: none;
+    color: #fff;
+    font-size: pxToRem(18);
+  }

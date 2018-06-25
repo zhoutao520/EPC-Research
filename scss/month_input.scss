@@ -1,0 +1,37 @@
+@function pxToRem($px) {
+    @return $px / 23.4375 * 1rem;
+  }
+  .left-arrow{
+    position: absolute;
+    width: pxToRem(30);
+    top: pxToRem(10);
+    left: pxToRem(10);
+  }
+  .submit{
+    width: 90%;
+    height: pxToRem(45);
+    margin-left: 5%;
+    background: #1aad19;
+    border-radius: 3px;
+    border: 0;
+    outline: none;
+    color: #fff;
+    font-size: pxToRem(18);
+  }
+  #myTable{
+      table{
+        width: 100%;
+        text-align: center;
+        th{
+            font-size: 18px;
+            background: #d3d3d3;
+        }
+        tr{
+            line-height: pxToRem(40);
+        }
+      }
+      input{
+          width: pxToRem(100);
+          outline: none;
+      }
+  }
